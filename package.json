@@ -1,0 +1,25 @@
+{
+  "name": "admin",
+  "version": "1.0.0",
+  "description": "pedagy admin",
+  "author": "koru <glassonyou@gmail.com>",
+  "private": true,
+  "scripts": {
+    "dev": "HOST=0.0.0.0 PORT=8081 nuxt",
+    "build": "HOST=0.0.0.0 PORT=8081 nuxt build",
+    "start": "HOST=0.0.0.0 PORT=8081 nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.3.6",
+    "nprogress": "^0.2.0",
+    "nuxt": "^2.2.0",
+    "vee-validate": "^2.1.3",
+    "vuetify": "^1.3.6"
+  },
+  "devDependencies": {
+    "material-design-icons-iconfont": "^4.0.3",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2"
+  }
+}
