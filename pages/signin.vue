@@ -55,7 +55,7 @@ export default {
         .then(response => {
           console.log(response);
           this.$axios({
-            url:`${config.apiServerHost}/admin`,
+            url:`${config.apiServerHost}/check`,
             method:'GET',
             headers:{'x-auth':response.data.token}
           }).then(profile => {
@@ -106,7 +106,7 @@ export default {
         .then(response => {
           console.log(response);
           this.$axios({
-            url:`${config.apiServerHost}/admin`,
+            url:`${config.apiServerHost}/check`,
             method:'GET',
             headers:{'x-auth':response.data.token}
           }).then(profile => {
