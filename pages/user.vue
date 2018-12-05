@@ -11,13 +11,17 @@
           <v-input-field name="searchQuery" v-model="searchQuery"></v-input-field>
           <v-btn primary @click="getDataFromApi">검색</v-btn>
         </v-form>
-        <v-data-table :headers="headers" :items="users" id="userTable" :rows-per-page-items="[10]" :loading="loading" :total-items="totalUsers" :pagination.sync="pagination">
+        <v-data-table :headers="headers" :items="users" id="userTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUsers" :pagination.sync="pagination">
           <template slot="items" slot-scope="props">
             <td>{{ props.item.userId }}</td>
             <td class="text-xs-right">{{ props.item.loungeNickName }}</td>
             <td class="text-xs-right">{{ props.item.topicNickName }}</td>
             <td class="text-xs-right">{{ userStatusItems.find(x=>x.value === props.item.status).text }}</td>
-            <td class="justify-center layout px-0">
+            <td class="text-xs-left">{{ groupItems.filter(x=>props.item.groups.includes(x.value)).map(x=>x.text).join(', ') }}</td>
+            <td class="justify-center align-center fill-height">
+              <v-checkbox name="isAdmin" v-model="props.item.isAdmin" readonly class="align-center justify-center fill-height"></v-checkbox>
+            </td>
+            <td class="justify-center layout px-0 align-center">
               <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <v-icon small @click="deleteItem(props.item)">delete</v-icon>
             </td>
@@ -49,6 +53,15 @@
                       <v-flex xs12 sm6 md4>
                         <v-select name="status" v-model="editedItem.status" :items="userStatusItems" label="상태"></v-select>
                       </v-flex>
+                      <v-flex xs12 sm6 md4>
+                        <v-select name="groups" chilps multiple v-model="editedItem.groups" :items="groupItems" label="그룹"></v-select>
+                      </v-flex>
+                      <v-flex xs12 sm6 md4>
+                        <v-checkbox name="isAdmin" v-model="editedItem.isAdmin" label="관리자 여부"></v-checkbox>
+                      </v-flex>
+                      <v-flex xs12 sm6 md4>
+                        <v-text-field name="memo" v-model="editedItem.memo" label="회원 메모"></v-text-field>
+                      </v-flex>
                     </v-layout>
                   </v-container>
                 </v-card-text>
@@ -75,28 +88,29 @@ import config from "~/assets/js/config";
 export default {
   data: () => ({
     dialog: false,
-    headers: [{text: "ID", align: "left", value: "userId"}, {text: "라운지닉네임", value: "loungeNickName"}, {text: "토픽필명", value: "topicNickName"}, {text: "상태", sortable: false, value: "status"}, {text: "수정/삭제", value: "actions", sortable: false}],
+    headers: [{text: "ID", align: "left", value: "userId"}, {text: "라운지닉네임", value: "loungeNickName"}, {text: "토픽필명", value: "topicNickName"}, {text: "상태", sortable: false, value: "status"}, {text: "그룹", sortable: false, value: "groups"}, {text: "관리자 여부", align: "center", value: "isAdmin", sortable: false}, {text: "수정/삭제", value: "actions", align: "center", sortable: false}],
     users: [],
     totalUsers: 0,
     editedIndex: -1,
     editedItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0
+      userId: "",
+      loungeNickName: "",
+      topicNickName: "",
+      status: "NORMAL",
+      isAdmin: false
     },
     defaultItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0
+      userId: "",
+      loungeNickName: "",
+      topicNickName: "",
+      status: "NORMAL",
+      isAdmin: false
     },
     loading: true,
     pagination: {},
     searchTargetItems: [{text: "이메일", value: "email"}, {text: "ID", value: "userId"}, {text: "닉네임", value: "nickName"}, {text: "상태", value: "status"}],
     userStatusItems: [{text: "인증전", value: "NORMAL"}, {text: "인증완료", value: "AUTHORIZED"}, {text: "잠김", value: "BLOCKED"}, {text: "삭제처리", value: "DELETED"}],
+    groupItems: [],
     searchQuery: null,
     searchTarget: "userId"
   }),
@@ -110,6 +124,15 @@ export default {
   watch: {
     dialog(val) {
       val || this.close();
+    }
+  },
+
+  created: async function() {
+    let groups = await this.$axios.get(`${config.apiServerHost}/group`);
+    if (groups.status === 200) {
+      this.groupItems = groups.data.map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
     }
   },
 
@@ -161,101 +184,6 @@ export default {
       this.totalUsers = total;
       this.loading = false;
     },
-    /*getDesserts () {
-      return [
-        {
-          value: false,
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: '1%'
-        },
-        {
-          value: false,
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: '1%'
-        },
-        {
-          value: false,
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: '7%'
-        },
-        {
-          value: false,
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: '8%'
-        },
-        {
-          value: false,
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: '16%'
-        },
-        {
-          value: false,
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: '0%'
-        },
-        {
-          value: false,
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: '2%'
-        },
-        {
-          value: false,
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: '45%'
-        },
-        {
-          value: false,
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: '22%'
-        },
-        {
-          value: false,
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: '6%'
-        }
-      ]
-    },*/
-
     editItem(item) {
       this.editedIndex = this.users.indexOf(item);
       this.editedItem = Object.assign({}, item);
