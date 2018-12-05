@@ -54,12 +54,26 @@ export default {
         })
         .then(response => {
           console.log(response);
-          localStorage.setItem("accessToken", response.data.token);
-          this.$axios.defaults.headers.common["x-auth"] = response.data.token;
-          this.$store.dispatch("signin", {
-            accessToken: response.data.token
-          });
-          this.$router.push("/");
+          this.$axios({
+            url:`${config.apiServerHost}/admin`,
+            method:'GET',
+            headers:{'x-auth':response.data.token}
+          }).then(profile => {
+            this.loading = false;
+            localStorage.setItem("accessToken", response.data.token);
+            this.$axios.defaults.headers.common["x-auth"] = response.data.token;
+            this.$store.dispatch("signin", {
+              accessToken: response.data.token
+            });
+            this.$router.push("/");
+          }).catch(err => {
+            this.loading = false;
+            this.message = err.response.data.message;
+            console.log(err.response.data.target);
+            if (err.response.data.target && this.$refs[err.response.data.target]) {
+              this.$refs[err.response.data.target].$el.focus();
+            }
+          })
         })
         .catch(err => {
           this.loading = false;
@@ -91,12 +105,26 @@ export default {
         })
         .then(response => {
           console.log(response);
-          localStorage.setItem("accessToken", response.data.token);
-          this.$axios.defaults.headers.common["x-auth"] = response.data.token;
-          this.$store.dispatch("signin", {
-            accessToken: response.data.token
-          });
-          this.$router.push("/");
+          this.$axios({
+            url:`${config.apiServerHost}/admin`,
+            method:'GET',
+            headers:{'x-auth':response.data.token}
+          }).then(profile => {
+            this.loading = false;
+            localStorage.setItem("accessToken", response.data.token);
+            this.$axios.defaults.headers.common["x-auth"] = response.data.token;
+            this.$store.dispatch("signin", {
+              accessToken: response.data.token
+            });
+            this.$router.push("/");
+          }).catch(err => {
+            this.loading = false;
+            this.message = err.response.data.message;
+            console.log(err.response.data.target);
+            if (err.response.data.target && this.$refs[err.response.data.target]) {
+              this.$refs[err.response.data.target].$el.focus();
+            }
+          })
         })
         .catch(err => {
           this.loading = false;
