@@ -4,10 +4,16 @@
   "description": "pedagy admin",
   "author": "koru <glassonyou@gmail.com>",
   "private": true,
+  "config": {
+    "nuxt": {
+      "host": "0.0.0.0",
+      "port": "8081"
+    }
+  },
   "scripts": {
-    "dev": "HOST=0.0.0.0 PORT=8081 nuxt",
-    "build": "HOST=0.0.0.0 PORT=8081 nuxt build",
-    "start": "HOST=0.0.0.0 PORT=8081 nuxt start",
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
     "generate": "nuxt generate"
   },
   "dependencies": {
