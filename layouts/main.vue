@@ -1,7 +1,7 @@
 <template>
   <div id="appRoot">
     <v-app id="inspire" class="app">
-      <app-drawer class="app--drawer" :drawer="drawer" ref="appDrawer"></app-drawer>
+      <app-drawer class="app--drawer" ref="appDrawer"></app-drawer>
       <app-toolbar class="app--toolbar" @APP_DRAWER_TOGGLED="drawerToggled"></app-toolbar>
       <v-content>
         <!-- Page Header -->
@@ -48,8 +48,7 @@ export default {
       show: false,
       text: "",
       color: ""
-    },
-    drawer: true
+    }
   }),
 
   computed: {},

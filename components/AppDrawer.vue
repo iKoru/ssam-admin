@@ -1,9 +1,9 @@
 <template>
-  <v-navigation-drawer id="appDrawer" :mini-variant.sync="mini" temporary app v-model="drawer" width="260">
+  <v-navigation-drawer id="appDrawer" :mini-variant.sync="mini" app v-model="drawer" width="260">
     <v-toolbar color="primary darken-1" dark>
-      <img src="~static/img/m.png" height="36" alt="Vue Material Admin Template">
+      <img src="~static/img/m.png" height="36" alt="Pedagy Administrator">
       <v-toolbar-title class="ml-0 pl-3">
-        <span class="hidden-sm-and-down">Vue Material</span>
+        <span class="hidden-sm-and-down">Pedagy Admin</span>
       </v-toolbar-title>
     </v-toolbar>
     <v-list dense expand>
@@ -79,7 +79,7 @@ export default {
     scrollSettings: {
       maxScrollbarLength: 160
     },
-    drawer: false
+    drawer: true
   }),
   computed: {
     computeGroupActive() {
@@ -113,7 +113,7 @@ export default {
 
 
 <style lang="stylus">
-// @import '../../node_modules/vuetify/src/stylus/settings/_elevations.styl';
+// @import '~/node_modules/vuetify/src/stylus/settings/_elevations.styl';
 #appDrawer {
   overflow: hidden;
 
