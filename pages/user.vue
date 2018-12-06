@@ -32,7 +32,7 @@
                 <td class="text-xs-left">{{ userStatusItems.find(x=>x.value === props.item.status).text }}</td>
                 <td class="text-xs-left">{{ groupItems.filter(x=>props.item.groups.includes(x.value)).map(x=>x.text).join(', ') }}</td>
                 <td class="justify-center align-center fill-height">
-                  <v-checkbox name="isAdmin" v-model="props.item.isAdmin" readonly class="align-center justify-center fill-height"></v-checkbox>
+                  <v-checkbox name="isAdmin" v-model="props.item.isAdmin" readonly hide-details primary class="align-center justify-center"></v-checkbox>
                 </td>
               </tr>
             </template>
