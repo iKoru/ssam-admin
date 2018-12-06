@@ -22,16 +22,17 @@
 
 <script>
 export default {
+  layout:'public',
   props: ['error'],
   methods: {
     goHome() {
       this.$router.push({path: "/"});
+    },
+    getImageSrc(errorCode){
+      return `/img/error/${errorCode}.svg`;
     }
   },
   computed:{
-    getImageSrc(errorCode){
-      return `~static/img/error/${errorCode}.svg`;
-    }
   }
 };
 </script>
