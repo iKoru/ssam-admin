@@ -30,6 +30,9 @@
                 <td class="text-xs-left">{{ props.item.loungeNickName }}</td>
                 <td class="text-xs-left">{{ props.item.topicNickName }}</td>
                 <td class="text-xs-left">{{ userStatusItems.find(x=>x.value === props.item.status).text }}</td>
+                <td class="text-xs-left">{{ regionItems.filter(x=>props.item.region.includes(x.value)).map(x=>x.text).join(', ') }}</td>
+                <td class="text-xs-left">{{ majorItems.filter(x=>props.item.major.includes(x.value)).map(x=>x.text).join(', ') }}</td>
+                <td class="text-xs-left">{{ gradeItems.filter(x=>props.item.grade.includes(x.value)).map(x=>x.text).join(', ') }}</td>
                 <td class="text-xs-left">{{ groupItems.filter(x=>props.item.groups.includes(x.value)).map(x=>x.text).join(', ') }}</td>
                 <td class="justify-center align-center fill-height">
                   <v-checkbox name="isAdmin" v-model="props.item.isAdmin" readonly hide-details primary class="align-center justify-center"></v-checkbox>
@@ -70,6 +73,27 @@
                         </v-flex>
                         <v-flex xs12 sm6>
                           <v-checkbox name="isAdmin" v-model="editedItem.isAdmin" label="관리자 여부"></v-checkbox>
+                        </v-flex>
+                        <v-flex xs12 sm6 md4>
+                          <v-autocomplete name="region" chips multiple item-text="text" item-value="value" v-model="editedItem.region" :items="regionItems" label="지역">
+                            <template slot="selection" slot-scope="props">
+                              <v-chip close :key="props.item.value" :selected="props.selected" @input="removeChip(props.item)">{{props.item.text}}</v-chip>
+                            </template>
+                          </v-autocomplete>
+                        </v-flex>
+                        <v-flex xs12 sm6 md4>
+                          <v-autocomplete name="major" chips multiple item-text="text" item-value="value" v-model="editedItem.major" :items="majorItems" label="전공">
+                            <template slot="selection" slot-scope="props">
+                              <v-chip close :key="props.item.value" :selected="props.selected" @input="removeChip(props.item)">{{props.item.text}}</v-chip>
+                            </template>
+                          </v-autocomplete>
+                        </v-flex>
+                        <v-flex xs12 sm6 md4>
+                          <v-autocomplete name="grade" chips multiple item-text="text" item-value="value" v-model="editedItem.grade" :items="gradeItems" label="학년">
+                            <template slot="selection" slot-scope="props">
+                              <v-chip close :key="props.item.value" :selected="props.selected" @input="removeChip(props.item)">{{props.item.text}}</v-chip>
+                            </template>
+                          </v-autocomplete>
                         </v-flex>
                         <v-flex xs12>
                           <v-autocomplete name="groups" chips multiple item-text="text" item-value="value" v-model="editedItem.groups" :items="groupItems" label="그룹">
@@ -117,7 +141,7 @@ import config from "~/assets/js/config";
 export default {
   data: () => ({
     dialog: false,
-    headers: [{text: "ID", align: "left", value: "userId"}, {text: "라운지닉네임", value: "loungeNickName"}, {text: "토픽필명", value: "topicNickName"}, {text: "상태", sortable: false, value: "status"}, {text: "그룹", sortable: false, value: "groups"}, {text: "관리자 여부", align: "center", value: "isAdmin", sortable: false}],
+    headers: [{text: "ID", align: "left", value: "userId"}, {text: "라운지닉네임", value: "loungeNickName"}, {text: "토픽필명", value: "topicNickName"}, {text: "상태", sortable: false, value: "status"}, {text: "지역", sortable: false, value: "region"}, {text: "전공", sortable: false, value: "major"}, {text: "학년", sortable: false, value: "grade"}, {text: "그룹", sortable: false, value: "groups"}, {text: "관리자 여부", align: "center", value: "isAdmin", sortable: false}],
     users: [],
     totalUsers: 0,
     editedIndex: -1,
@@ -128,6 +152,9 @@ export default {
       status: "NORMAL",
       isAdmin: false,
       groups:[],
+      major:[],
+      grade:[],
+      region:[],
       memo:"",
       email:""
     },
@@ -138,6 +165,9 @@ export default {
       status: "NORMAL",
       isAdmin: false,
       groups:[],
+      major:[],
+      grade:[],
+      region:[],
       memo:"",
       email:""
     },
@@ -145,6 +175,9 @@ export default {
     pagination: {},
     searchTargetItems: [{text: "이메일", value: "email"}, {text: "ID", value: "userId"}, {text: "닉네임", value: "nickName"}, {text: "상태", value: "status"}, {text:'그룹', value:'groupId'}],
     userStatusItems: [{text: "인증전", value: "NORMAL"}, {text: "인증완료", value: "AUTHORIZED"}, {text: "잠김", value: "BLOCKED"}, {text: "삭제처리", value: "DELETED"}],
+    majorItems: [],
+    gradeItems: [],
+    regionItems: [],
     groupItems: [],
     searchQuery: null,
     searchGroup: null,
@@ -174,7 +207,16 @@ export default {
   created: async function() {
     let groups = await this.$axios.get(`${config.apiServerHost}/group`);
     if (groups.status === 200) {
-      this.groupItems = groups.data.map(x => {
+      this.majorItems = groups.data.filter(x=> x.groupType === 'M').map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
+      this.gradeItems = groups.data.filter(x=> x.groupType === 'G').map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
+      this.regionItems = groups.data.filter(x=> x.groupType === 'R').map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
+      this.groupItems = groups.data.filter(x=> x.groupType === 'N').map(x => {
         return {text: x.groupName, value: x.groupId};
       });
     }else{
@@ -215,8 +257,18 @@ export default {
         }
       }
       console.log(response);
-      
-      this.users = response.data;
+      const majors = this.majorItems.map(z=>z.value),
+        regions = this.regionItems.map(z=>z.value),
+        grades = this.gradeItems.map(z=>z.value),
+        groups = this.groupItems.map(z=>z.value);
+      this.users = response.data.map(x=>{
+        let result = {...x};
+        result.major = x.groups.filter(y=>majors.includes(y));
+        result.region = x.groups.filter(y=>regions.includes(y));
+        result.grade = x.groups.filter(y=>grades.includes(y));
+        result.groups = x.groups.filter(y=>groups.includes(y));
+        return result;
+      });
       this.totalUsers = response.data.length;
       this.loading = false;
     },
