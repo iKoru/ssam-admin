@@ -19,7 +19,7 @@
         <span class="caption mr-1">Make With Love</span>
         <v-icon color="pink" small>favorite</v-icon>
       </v-footer>
-      <v-snackbar :timeout="3000" bottom right :color="snackbar.color" v-model="snackbar.show">
+      <v-snackbar :timeout="3000" bottom left :color="snackbar.color" v-model="snackbar.show">
         {{ snackbar.text }}
         <v-btn dark flat @click.native="snackbar.show = false" icon>
           <v-icon>close</v-icon>
@@ -53,16 +53,22 @@ export default {
 
   computed: {},
 
+  methods: {
+    drawerToggled(callback) {
+      this.$refs.appDrawer.toggleDrawer();
+    },
+    showSnackbar(text, color){
+      this.snackbar.text = text;
+      this.snackbar.color = color;
+      this.snackbar.show = true;
+    }
+  },
   created() {
     AppEvents.forEach(item => {
       this.$on(item.name, item.callback);
     });
+    this.$router.app.$on('showSnackbar', this.showSnackbar);
     // window.getApp = this;
-  },
-  methods: {
-    drawerToggled(callback) {
-      this.$refs.appDrawer.toggleDrawer();
-    }
   },
   middleware:'requireAuth'
 };

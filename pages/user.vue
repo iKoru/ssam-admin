@@ -178,7 +178,7 @@ export default {
         return {text: x.groupName, value: x.groupId};
       });
     }else{
-      this.$emit('showSnackbar', `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, 'error')
+      this.$router.app.$emit('showSnackbar', `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, 'error')
     }
   },
 
@@ -210,7 +210,7 @@ export default {
       }catch(err){
         if (err.response.status !== 200) {
           this.loading = false;
-          this.$emit('showSnackbar', `회원 리스트를 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ''}]`, 'error')
+          this.$router.app.$emit('showSnackbar', `회원 리스트를 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ''}]`, 'error')
           return;
         }
       }
@@ -234,11 +234,13 @@ export default {
         try{
           response = await this.$axios.delete(`${config.apiServerHost}/user/${this.users[index].userId}`);
         }catch(err){
-          this.$emit('showSnackbar', `회원을 삭제하지 못했습니다.[${err.response.data.message}]`, 'error')
+          this.$router.app.$emit('showSnackbar', `회원을 삭제하지 못했습니다.[${err.response.data.message}]`, 'error')
+          this.loading = false;
+          return;
         }
         if(response.status === 200){
           this.users.splice(index, 1)
-          this.$emit('showSnackbar', `${this.users[index].userId} 회원을 삭제하였습니다.`, 'success')
+          this.$router.app.$emit('showSnackbar', `${this.users[index].userId} 회원을 삭제하였습니다.`, 'success')
         }
         this.loading = false;
       }
@@ -258,23 +260,25 @@ export default {
         try{
           response = await this.$axios.put(`${config.apiServerHost}/user`, this.editedItem)
         }catch(err){
-          this.$emit('showSnackbar', `회원정보를 수정하지 못했습니다.[${err.response.data.message}]`, 'error')
+          this.$router.app.$emit('showSnackbar', `회원정보를 수정하지 못했습니다.[${err.response.data.message}]`, 'error')
+          return;
         }
         console.log(response);
         if(response.status === 200){
           Object.assign(this.users[this.editedIndex], this.editedItem);
-          this.$emit('showSnackbar', `${this.users[this.editedIndex].userId} 회원 정보를 수정하였습니다.`, 'success')
+          this.$router.app.$emit('showSnackbar', `${this.users[this.editedIndex].userId} 회원 정보를 수정하였습니다.`, 'success')
         }
       } else {//create
         let response;
         try{
           response = await this.$axios.post(`${config.apiServerHost}/user`, this.editedItem)
         }catch(err){
-          this.$emit('showSnackbar', `회원을 추가하지 못했습니다.[${err.response.data.message}]`, 'error')
+          this.$router.app.$emit('showSnackbar', `회원을 추가하지 못했습니다.[${err.response.data.message}]`, 'error')
+          return;
         }
         if(response.status === 200){
           this.users.push(this.editedItem);
-          this.$emit('showSnackbar', `${this.editedItem.userId} 회원을 추가하였습니다.`, 'success')
+          this.$router.app.$emit('showSnackbar', `${this.editedItem.userId} 회원을 추가하였습니다.`, 'success')
         }
       }
       this.close();
