@@ -40,7 +40,6 @@
               <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
             </template>
             <template slot="actions-prepend">
-              <v-spacer></v-spacer>
               <v-dialog v-model="dialog" max-width="500px">
                 <v-btn slot="activator" color="primary" dark class="mb-2">신규회원 생성</v-btn>
                 <v-card>
@@ -54,12 +53,17 @@
                         <v-flex xs12>
                           <v-text-field name="userId" v-model="editedItem.userId" label="ID" readonly></v-text-field>
                         </v-flex>
-                        <v-flex xs12 sm6>
-                          <v-text-field name="loungeNickName" v-model="editedItem.loungeNickName" label="라운지 닉네임" placeholder="회원 생성 시에는 랜덤생성됨"></v-text-field>
+                        <v-flex xs12>
+                          <v-text-field name="email" v-model="editedItem.email" label="이메일"></v-text-field>
                         </v-flex>
-                        <v-flex xs12 sm6>
-                          <v-text-field name="topicNickName" v-model="editedItem.topicNickName" label="토픽 필명" placeholder="회원 생성 시에는 랜덤생성됨"></v-text-field>
-                        </v-flex>
+                        <template v-if="formTitle !== '회원 생성'">
+                          <v-flex xs12 sm6>
+                            <v-text-field name="loungeNickName" v-model="editedItem.loungeNickName" label="라운지 닉네임"></v-text-field>
+                          </v-flex>
+                          <v-flex xs12 sm6>
+                            <v-text-field name="topicNickName" v-model="editedItem.topicNickName" label="토픽 필명"></v-text-field>
+                          </v-flex>
+                        </template>
                         <v-flex xs12 sm6>
                           <v-select name="status" v-model="editedItem.status" :items="userStatusItems" label="상태"></v-select>
                         </v-flex>
@@ -123,7 +127,8 @@ export default {
       status: "NORMAL",
       isAdmin: false,
       groups:[],
-      memo:""
+      memo:"",
+      email:""
     },
     defaultItem: {
       userId: "",
@@ -132,7 +137,8 @@ export default {
       status: "NORMAL",
       isAdmin: false,
       groups:[],
-      memo:""
+      memo:"",
+      email:""
     },
     loading: true,
     pagination: {},
@@ -284,8 +290,9 @@ export default {
 };
 </script>
 
-<style lang="styl">
-#userTable {
+<style lang="stylus">
+#userTable 
   width: 100%;
-}
+  .v-datatable__actions
+    justify-content:space-between;
 </style>
