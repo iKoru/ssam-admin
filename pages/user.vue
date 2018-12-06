@@ -7,24 +7,31 @@
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-form>
-          <v-select v-model="searchTarget" :items="searchTargetItems" label="검색 대상"></v-select>
-          <v-input-field name="searchQuery" v-model="searchQuery"></v-input-field>
-          <v-btn primary @click="getDataFromApi">검색</v-btn>
+          <v-layout wrap xs12>
+            <v-flex xs3>
+              <v-select v-model="searchTarget" :items="searchTargetItems" label="검색 대상"></v-select>
+            </v-flex>
+            <v-flex xs6>
+              <v-select v-if="searchTarget === 'groupId'" v-model="searchGroup" :items="groupItems"></v-select>
+              <v-text-field v-else name="searchQuery" v-model="searchQuery"></v-text-field>
+            </v-flex>
+            <v-flex xs3>
+              <v-btn primary @click="getDataFromApi">검색</v-btn>
+            </v-flex>
+          </v-layout>
         </v-form>
         <v-data-table :headers="headers" :items="users" id="userTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUsers" :pagination.sync="pagination">
           <template slot="items" slot-scope="props">
-            <td>{{ props.item.userId }}</td>
-            <td class="text-xs-right">{{ props.item.loungeNickName }}</td>
-            <td class="text-xs-right">{{ props.item.topicNickName }}</td>
-            <td class="text-xs-right">{{ userStatusItems.find(x=>x.value === props.item.status).text }}</td>
-            <td class="text-xs-left">{{ groupItems.filter(x=>props.item.groups.includes(x.value)).map(x=>x.text).join(', ') }}</td>
-            <td class="justify-center align-center fill-height">
-              <v-checkbox name="isAdmin" v-model="props.item.isAdmin" readonly class="align-center justify-center fill-height"></v-checkbox>
-            </td>
-            <td class="justify-center layout px-0 align-center">
-              <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
-              <v-icon small @click="deleteItem(props.item)">delete</v-icon>
-            </td>
+            <tr @dblclick="editItem(props.item)">
+              <td>{{ props.item.userId }}</td>
+              <td class="text-xs-right">{{ props.item.loungeNickName }}</td>
+              <td class="text-xs-right">{{ props.item.topicNickName }}</td>
+              <td class="text-xs-right">{{ userStatusItems.find(x=>x.value === props.item.status).text }}</td>
+              <td class="text-xs-left">{{ groupItems.filter(x=>props.item.groups.includes(x.value)).map(x=>x.text).join(', ') }}</td>
+              <td class="justify-center align-center fill-height">
+                <v-checkbox name="isAdmin" v-model="props.item.isAdmin" readonly class="align-center justify-center fill-height"></v-checkbox>
+              </td>
+            </tr>
           </template>
           <template slot="no-data">
             <v-btn color="primary" @click="getDataFromApi">Reset</v-btn>
@@ -41,26 +48,30 @@
                 <v-card-text>
                   <v-container grid-list-md>
                     <v-layout wrap>
-                      <v-flex xs12 sm6 md4>
-                        <v-text-field name="userId" v-model="editedItem.userId" label="ID"></v-text-field>
+                      <v-flex xs12>
+                        <v-text-field name="userId" v-model="editedItem.userId" label="ID" readonly></v-text-field>
                       </v-flex>
-                      <v-flex xs12 sm6 md4>
-                        <v-text-field name="loungeNickName" v-model="editedItem.loungeNickName" label="라운지 닉네임"></v-text-field>
+                      <v-flex xs12 sm6>
+                        <v-text-field name="loungeNickName" v-model="editedItem.loungeNickName" label="라운지 닉네임" placeholder="회원 생성 시에는 랜덤생성됨"></v-text-field>
                       </v-flex>
-                      <v-flex xs12 sm6 md4>
-                        <v-text-field name="topicNickName" v-model="editedItem.topicNickName" label="토픽 필명"></v-text-field>
+                      <v-flex xs12 sm6>
+                        <v-text-field name="topicNickName" v-model="editedItem.topicNickName" label="토픽 필명" placeholder="회원 생성 시에는 랜덤생성됨"></v-text-field>
                       </v-flex>
-                      <v-flex xs12 sm6 md4>
+                      <v-flex xs12 sm6>
                         <v-select name="status" v-model="editedItem.status" :items="userStatusItems" label="상태"></v-select>
                       </v-flex>
-                      <v-flex xs12 sm6 md4>
-                        <v-select name="groups" chilps multiple v-model="editedItem.groups" :items="groupItems" label="그룹"></v-select>
-                      </v-flex>
-                      <v-flex xs12 sm6 md4>
+                      <v-flex xs12 sm6>
                         <v-checkbox name="isAdmin" v-model="editedItem.isAdmin" label="관리자 여부"></v-checkbox>
                       </v-flex>
-                      <v-flex xs12 sm6 md4>
-                        <v-text-field name="memo" v-model="editedItem.memo" label="회원 메모"></v-text-field>
+                      <v-flex xs12>
+                        <v-autocomplete name="groups" chips multiple item-text="text" item-value="value" v-model="editedItem.groups" :items="groupItems" label="그룹">
+                          <template slot="selection" slot-scope="props">
+                            <v-chip close :key="props.item.value" :selected="props.selected" @input="removeChip(props.item)">{{props.item.text}}</v-chip>
+                          </template>
+                        </v-autocomplete>
+                      </v-flex>
+                      <v-flex xs12>
+                        <v-textarea name="memo" v-model="editedItem.memo" label="회원 메모" placeholder="관리자만 볼 수 있는 회원의 메모입니다." hint="관리자만 볼 수 있는 회원의 메모입니다."></v-textarea>
                       </v-flex>
                     </v-layout>
                   </v-container>
@@ -68,8 +79,16 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
-                  <v-btn color="blue darken-1" flat @click="save">Save</v-btn>
+                  <template v-if="formTitle !== '회원 생성'">
+                    <v-btn color="error" @click="deleteItem(editItem)">회원 삭제</v-btn>
+                  </template>
+                  <v-btn color="blue darken-1" flat @click="close">취소</v-btn>
+                  <template v-if="formTitle === '회원 생성'">
+                    <v-btn color="primary" dark @click="save">생성</v-btn>
+                  </template>
+                  <template v-else>
+                    <v-btn color="primary" dark @click="save">변경</v-btn>
+                  </template>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -88,7 +107,7 @@ import config from "~/assets/js/config";
 export default {
   data: () => ({
     dialog: false,
-    headers: [{text: "ID", align: "left", value: "userId"}, {text: "라운지닉네임", value: "loungeNickName"}, {text: "토픽필명", value: "topicNickName"}, {text: "상태", sortable: false, value: "status"}, {text: "그룹", sortable: false, value: "groups"}, {text: "관리자 여부", align: "center", value: "isAdmin", sortable: false}, {text: "수정/삭제", value: "actions", align: "center", sortable: false}],
+    headers: [{text: "ID", align: "left", value: "userId"}, {text: "라운지닉네임", value: "loungeNickName"}, {text: "토픽필명", value: "topicNickName"}, {text: "상태", sortable: false, value: "status"}, {text: "그룹", sortable: false, value: "groups"}, {text: "관리자 여부", align: "center", value: "isAdmin", sortable: false}],
     users: [],
     totalUsers: 0,
     editedIndex: -1,
@@ -97,14 +116,18 @@ export default {
       loungeNickName: "",
       topicNickName: "",
       status: "NORMAL",
-      isAdmin: false
+      isAdmin: false,
+      groups:[],
+      memo:""
     },
     defaultItem: {
       userId: "",
       loungeNickName: "",
       topicNickName: "",
       status: "NORMAL",
-      isAdmin: false
+      isAdmin: false,
+      groups:[],
+      memo:""
     },
     loading: true,
     pagination: {},
@@ -133,6 +156,8 @@ export default {
       this.groupItems = groups.data.map(x => {
         return {text: x.groupName, value: x.groupId};
       });
+    }else{
+      this.$emit('showSnackbar', `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, 'error')
     }
   },
 
@@ -156,6 +181,7 @@ export default {
       console.log(response);
       if (response.status !== 200) {
         this.loading = false;
+        this.$emit('showSnackbar', `회원 리스트를 불러오지 못했습니다.[${response.data.message}]`, 'error')
         return;
       }
       let items = response.data;
@@ -190,9 +216,19 @@ export default {
       this.dialog = true;
     },
 
-    deleteItem(item) {
+    deleteItem: async function (item) {
       const index = this.users.indexOf(item);
-      confirm("정말 이 회원을 삭제하시겠습니까? 해당 회원이 작성한 글 등은 유지되고, 소유한 토픽이 있을 경우 삭제가 불가능합니다.") && this.desserts.splice(index, 1);
+      if(confirm("정말 이 회원을 삭제하시겠습니까? 해당 회원이 작성한 글 등은 유지되고, 소유한 토픽이 있을 경우 삭제가 불가능합니다.")){
+        this.loading = true;
+        let response = await this.$axios.delete(`${config.apiServerHost}/user/${this.users[index].userId}`);
+        if(response.status === 200){
+          this.users.splice(index, 1)
+          this.$emit('showSnackbar', `${this.users[index].userId} 회원을 삭제하였습니다.`, 'success')
+        }else{
+          this.$emit('showSnackbar', `회원을 삭제하지 못했습니다.[${response.data.message}]`, 'error')
+        }
+        this.loading = false;
+      }
     },
 
     close() {
@@ -203,13 +239,29 @@ export default {
       }, 300);
     },
 
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.users[this.editedIndex], this.editedItem);
-      } else {
-        this.users.push(this.editedItem);
+    save: async function() {
+      if (this.editedIndex > -1) {//update
+        let response = await this.$axios.put(`${config.apiServerHost}/user`, this.editedItem)
+        console.log(response);
+        if(response.status === 200){
+          Object.assign(this.users[this.editedIndex], this.editedItem);
+          this.$emit('showSnackbar', `${this.users[this.editedIndex].userId} 회원 정보를 수정하였습니다.`, 'success')
+        }else{
+          this.$emit('showSnackbar', `회원정보를 수정하지 못했습니다.[${response.data.message}]`, 'error')
+        }
+      } else {//create
+        let response = await this.$axios.post(`${config.apiServerHost}/user`, this.editedItem)
+        if(response.status === 200){
+          this.users.push(this.editedItem);
+          this.$emit('showSnackbar', `${this.editedItem.userId} 회원을 추가하였습니다.`, 'success')
+        }else{
+          this.$emit('showSnackbar', `회원을 추가하지 못했습니다.[${response.data.message}]`, 'error')
+        }
       }
       this.close();
+    },
+    removeChip(item){
+      this.editedItem.groups.splice(this.editedItem.groups.indexOf(item.value), 1)
     }
   },
   layout: "main",
