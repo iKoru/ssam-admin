@@ -23,7 +23,7 @@
             </v-layout>
           </v-form>
           
-          <v-data-table :headers="headers" :items="users" id="userTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUsers" :pagination.sync="pagination">
+          <v-data-table :headers="headers" :items="users" id="userTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUsers" :pagination.sync="pagination" :no-data-text="noresult">
             <template slot="items" slot-scope="props">
               <tr @dblclick="editItem(props.item)">
                 <td>{{ props.item.userId }}</td>
@@ -37,6 +37,7 @@
               </tr>
             </template>
             <template slot="no-data">
+              {{this.noresult}}
               <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
             </template>
             <template slot="actions-prepend">
@@ -148,7 +149,8 @@ export default {
     searchQuery: null,
     searchGroup: null,
     searchTarget: "userId",
-    searchStatus : null
+    searchStatus : null,
+    noresult : '표시할 결과가 없습니다.'
   }),
 
   computed: {
@@ -292,7 +294,7 @@ export default {
 
 <style lang="stylus">
 #userTable 
-  width: 100%;
+  width: 100%
   .v-datatable__actions
-    justify-content:space-between;
+    justify-content:space-between
 </style>
