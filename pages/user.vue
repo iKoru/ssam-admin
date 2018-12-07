@@ -65,10 +65,10 @@
                       </v-flex>
                       <template v-if="formTitle !== '회원 생성'">
                         <v-flex xs12 sm6>
-                          <v-text-field name="loungeNickName" v-model="editedItem.loungeNickName" label="라운지 닉네임"></v-text-field>
+                          <v-text-field name="loungeNickName" v-model="editedItem.loungeNickName" label="라운지 필명"></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6>
-                          <v-text-field name="topicNickName" v-model="editedItem.topicNickName" label="토픽 필명"></v-text-field>
+                          <v-text-field name="topicNickName" v-model="editedItem.topicNickName" label="토픽 닉네임"></v-text-field>
                         </v-flex>
                       </template>                      
                       <v-flex xs12 sm6>
@@ -144,7 +144,7 @@ import config from "~/assets/js/config";
 export default {
   data: () => ({
     dialog: false,
-    headers: [{text: "ID", align: "left", value: "userId"}, {text: "라운지닉네임", value: "loungeNickName"}, {text: "토픽필명", value: "topicNickName"}, {text: "상태", sortable: false, value: "status"}, {text: "지역", sortable: false, value: "region"}, {text: "전공", sortable: false, value: "major"}, {text: "학년", sortable: false, value: "grade"}, {text: "그룹", sortable: false, value: "groups"}, {text: "관리자 여부", align: "center", value: "isAdmin", sortable: false}],
+    headers: [{text: "ID", align: "left", value: "userId"}, {text: "라운지 필명", value: "loungeNickName"}, {text: "토픽 닉네임", value: "topicNickName"}, {text: "상태", sortable: false, value: "status"}, {text: "지역", sortable: false, value: "region"}, {text: "전공", sortable: false, value: "major"}, {text: "학년", sortable: false, value: "grade"}, {text: "그룹", sortable: false, value: "groups"}, {text: "관리자 여부", align: "center", value: "isAdmin", sortable: false}],
     users: [],
     totalUsers: 0,
     editedIndex: -1,
