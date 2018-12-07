@@ -13,8 +13,7 @@
               <v-select v-model="searchTarget" pa-2 :items="searchTargetItems" label="검색 대상"></v-select>
             </v-flex>
             <v-flex xs12 sm6>
-              <v-select v-if="searchTarget === 'status'" pa-2 v-model="searchStatus" :items="boardStatusItems"></v-select>
-              <v-select v-else-if="searchTarget === 'boardType'" pa-2 v-model="searchType" :items="boardTypeItems"></v-select>
+              <v-select clearable v-if="searchTarget === 'boardType'" pa-2 v-model="searchType" :items="boardTypeItems"></v-select>
               <v-text-field v-else name="searchQuery" pa-2 v-model="searchQuery" @keyup.enter.stop="getDataFromApi"></v-text-field>
             </v-flex>
             <v-flex xs12 sm2>
@@ -60,7 +59,7 @@
                         <v-text-field name="boardName" v-model="editedItem.boardName" label="게시판 이름"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-text-field name="ownerId" v-model="editedItem.ownerId" label="소유자ID" :required="formTitle === '게시판 생성'"></v-text-field>
+                        <v-text-field name="ownerId" v-model="editedItem.ownerId" label="소유자ID" :required="formTitle === '게시판 생성'" placeholder="미입력 생성시 현재 ID로 지정"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
                         <v-select name="status" v-model="editedItem.status" :items="boardStatusItems" label="상태"></v-select>
@@ -181,13 +180,13 @@ export default {
     },
     loading: true,
     pagination: {},
-    searchTargetItems: [{text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}, {text: "상태", value: "status"}],
+    searchTargetItems: [{text:'게시판ID', value:'boardId'}, {text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}],
     boardStatusItems: [{text: "정상", value: "NORMAL"}, {text: "삭제처리", value: "DELETED"}],
     allGroupAuthItems: [{text: "비공개", value: "NONE"}, {text: "읽기전용", value: "READONLY"}],
     boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "E"}],
     groupItems: [],
     searchQuery: null,
-    searchTarget: "boardName",
+    searchTarget: "boardId",
     searchStatus: null,
     searchType: null,
     noresult: "표시할 결과가 없습니다."
@@ -237,12 +236,11 @@ export default {
         query.sortTarget = sortBy;
         query.isAscending = !descending;
       }
-      if (this.searchTarget !== "groupType" && this.searchTarget !== "status" && this.searchQuery) {
-        query[this.searchTarget] = this.searchQuery;
-      } else if (this.searchTarget === "groupType") {
+      if (this.searchTarget !== "boardType" && this.searchQuery) {
+        query.searchTarget = this.searchTarget
+        query.searchQuery = this.searchQuery;
+      } else if (this.searchTarget === "boardType") {
         query[this.searchTarget] = this.searchType;
-      } else if (this.searchTarget === "status") {
-        query[this.searchTarget] = this.searchStatus;
       }
       let response;
       try {
