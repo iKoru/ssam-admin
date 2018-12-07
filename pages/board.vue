@@ -66,7 +66,7 @@
                         <v-select name="status" v-model="editedItem.status" :items="boardStatusItems" label="상태"></v-select>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-select name="boardType" v-model="editedItem.boardType" :items="boardTypeItems" label="게시판 종류"></v-select>
+                        <v-select name="boardType" v-model="editedItem.boardType" :items="boardTypeItems" :readonly="formTitle !== '게시판 생성'" label="게시판 종류"></v-select>
                       </v-flex>
                       <v-flex xs12 sm6>
                         <v-checkbox name="allowAnonymous" v-model="editedItem.allowAnonymous" label="익명글 허용 여부"></v-checkbox>
@@ -95,10 +95,15 @@
                           <v-textarea name="reservedContents" :value="editedItem.reservedContents ? JSON.stringify(editedItem.reservedContents) : ''" label="변경 예약 내용" placeholder="변경 예약 내용" readonly></v-textarea>
                         </v-flex>
                         <v-flex xs12 sm6>
-                          <v-checkbox name="overwrite" v-model="editedItem.overwrite" label="예약내용에 합치기"></v-checkbox>
+                          <v-checkbox name="overwrite" v-model="editedItem.overwrite" label="예약내용 덮어쓰기"></v-checkbox>
                         </v-flex>
                         <v-flex xs12 sm6>
-                          <v-checkbox name="immediate" v-model="editedItem.immediate" label="즉시반영" hint="선택하지 않으면 예약내용에 반영됩니다."></v-checkbox>
+                          <v-tooltip bottom>
+                            <v-checkbox slot="activator" name="immediate" v-model="editedItem.immediate" label="즉시반영"></v-checkbox>
+                            <span>선택하지 않으면 예약내용에 반영됩니다
+                              <br>선택하면 예약내용은 유지되고 즉시 반영됩니다.
+                            </span>
+                          </v-tooltip>
                         </v-flex>
                       </template>
                     </v-layout>
@@ -138,7 +143,7 @@ export default {
   data: () => ({
     dialog: false,
     showCalendar: false,
-    headers: [{text: "게시판ID", align:'left', value: "boardId"}, {text: "게시판 이름", align:'left', value: "boardName"}, {text: "소유자ID", align:'left', value: "ownerId"}, {text:'게시판 종류', align:'left', value:'boardType'}, {text: "상태", align:'left', value: "status"}, {text: "전체 접근허용 구분", sortable: false, value: "allGroupAuth"}, {text: "익명글 허용 여부", align: "center", value: "allowAnonymous", sortable: false}, {text:'변경예약일', align:'left', value:'reservedDate'}],
+    headers: [{text: "게시판ID", align: "left", value: "boardId"}, {text: "게시판 이름", align: "left", value: "boardName"}, {text: "소유자ID", align: "left", value: "ownerId"}, {text: "게시판 종류", align: "left", value: "boardType"}, {text: "상태", align: "left", value: "status"}, {text: "전체 접근허용 구분", sortable: false, value: "allGroupAuth"}, {text: "익명글 허용 여부", align: "center", value: "allowAnonymous", sortable: false}, {text: "변경예약일", align: "left", value: "reservedDate"}],
     boards: [],
     totalBoards: 0,
     editedIndex: -1,
@@ -155,8 +160,8 @@ export default {
       reservedDate: null,
       reservedContents: null,
       password: undefined,
-      overwrite:false,
-      immediate:false
+      overwrite: false,
+      immediate: false
     },
     defaultItem: {
       boardId: "",
@@ -171,15 +176,15 @@ export default {
       reservedDate: null,
       reservedContents: null,
       password: undefined,
-      overwrite:false,
-      immediate:false
+      overwrite: false,
+      immediate: false
     },
     loading: true,
     pagination: {},
     searchTargetItems: [{text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}, {text: "상태", value: "status"}],
     boardStatusItems: [{text: "정상", value: "NORMAL"}, {text: "삭제처리", value: "DELETED"}],
     allGroupAuthItems: [{text: "비공개", value: "NONE"}, {text: "읽기전용", value: "READONLY"}],
-    boardTypeItems:[{text:'라운지', value:'L'}, {text:'토픽', value:'T'}, {text:'아카이브', value:'D'}, {text:'기타', value:'E'}],
+    boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "E"}],
     groupItems: [],
     searchQuery: null,
     searchTarget: "boardName",
@@ -209,10 +214,9 @@ export default {
   created: async function() {
     let groups = await this.$axios.get(`${config.apiServerHost}/group`);
     if (groups.status === 200) {
-      this.groupItems = groups.data
-        .map(x => {
-          return {text: x.groupName, value: x.groupId};
-        });
+      this.groupItems = groups.data.map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
     } else {
       this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
     }
@@ -251,23 +255,23 @@ export default {
         }
       }
       console.log(response);
-      this.boards = response.data
+      this.boards = response.data;
       this.totalBoards = response.data.length;
       this.loading = false;
     },
     editItem(item) {
-      this.editedIndex = this.boards.map(x=>x.boardId).indexOf(item.boardId);
+      this.editedIndex = this.boards.map(x => x.boardId).indexOf(item.boardId);
       this.editedItem = Object.assign({}, item);
-      if(this.editedItem.reservedDate){
-        this.editedItem.reservedDate = this.$moment(this.editedItem.reservedDate, 'YYYYMMDD').format('YYYY-MM-DD')
+      if (this.editedItem.reservedDate) {
+        this.editedItem.reservedDate = this.$moment(this.editedItem.reservedDate, "YYYYMMDD").format("YYYY-MM-DD");
       }
       this.dialog = true;
     },
 
     deleteItem: async function(item) {
-      const index = this.boards.map(x=>x.boardId).indexOf(item.boardId);
-      if(index < 0){
-        alert('선택된 게시판이 없습니다. 확인 후 다시 시도해주세요.');
+      const index = this.boards.map(x => x.boardId).indexOf(item.boardId);
+      if (index < 0) {
+        alert("선택된 게시판이 없습니다. 확인 후 다시 시도해주세요.");
         return;
       }
       if (confirm("정말 이 게시판을 삭제하시겠습니까? 해당 게시판에 작성된 글 등은 유지됩니다.")) {
@@ -300,18 +304,18 @@ export default {
     save: async function() {
       if (this.editedIndex > -1) {
         //update
-        if(this.editedItem.overwrite && this.editedItem.immediate){
-          alert('덮어쓰기와 즉시 반영 옵션을 동시에 선택할 수 없습니다.');
+        if (this.editedItem.overwrite && this.editedItem.immediate) {
+          alert("덮어쓰기와 즉시 반영 옵션을 동시에 선택할 수 없습니다.");
           return;
-        }else if(!this.editedItem.overwrite && !this.editedItem.immediate && this.editedItem.reservedContents){
-          alert('이미 예약된 변경내용이 존재합니다. 합치기 혹은 즉시반영 옵션을 선택해주세요.')
+        } else if (!this.editedItem.overwrite && !this.editedItem.immediate && this.editedItem.reservedContents) {
+          alert("이미 예약된 변경내용이 존재합니다. 덮어쓰기 혹은 즉시반영 옵션을 선택해주세요.");
           return;
-        }else{
-          if(!confirm(`게시판 정보 변경내용을 ${this.editedItem.overwrite?'현재의 예약내용에 합칩니다.':(this.editedItem.immediate?'즉시 반영합니다.':((this.editedItem.reservedDate?this.editedItem.reservedDate:'1개월 뒤')+'에 반영되도록 예약합니다.'))} 계속하시겠습니까?`)){
+        } else {
+          if (!confirm(`게시판 정보 변경내용을 ${this.editedItem.overwrite && this.editedItem.reservedContents ? "현재의 예약내용으로 덮어씁니다." : this.editedItem.immediate ? "즉시 반영합니다." : (this.editedItem.reservedDate ? this.editedItem.reservedDate : "1개월 뒤") + "에 반영되도록 예약합니다."} 계속하시겠습니까?`)) {
             return;
           }
         }
-        
+
         let response;
         try {
           response = await this.$axios.put(`${config.apiServerHost}/board`, this.editedItem);
@@ -319,7 +323,7 @@ export default {
           this.$router.app.$emit("showSnackbar", `게시판정보를 변경(예약)하지 못했습니다.[${err.response.data.message}]`, "error");
           return;
         }
-        
+
         this.$router.app.$emit("showSnackbar", `${this.boards[this.editedIndex].boardName} 게시판 정보를 수정하였습니다.`, "success");
         this.getDataFromApi();
       } else {
