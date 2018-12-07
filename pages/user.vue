@@ -4,7 +4,7 @@
       <v-layout row wrap class="elevation-1" white>
         <!--<v-content class="elevation-1 pt-0">-->
         <v-toolbar flat color="white">
-          <v-toolbar-title>회원관리</v-toolbar-title>
+          <v-toolbar-title>회원 관리</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-form class="px-3 pt-2 white">
