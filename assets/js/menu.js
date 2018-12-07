@@ -39,6 +39,12 @@ const Menu = [
     name:'report'
   },
   {
+    title:'회원별 게시물 관리',
+    group:'board',
+    icon:'folder_shared',
+    name:'userDocument'
+  },
+  {
     title:'동물명 관리',
     group:'board',
     icon:'style',
