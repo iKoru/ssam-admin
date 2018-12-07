@@ -17,6 +17,7 @@ module.exports = {
   plugins: [
     {src:'~/plugins/vuetify'},
     {src:'~/plugins/veevalidate', ssr:false},
+    {src:'~/plugins/moment'},
     {src:'~/plugins/router', ssr:false}
   ],
   css: ['~/assets/style/app.styl'],

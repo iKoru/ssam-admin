@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
+    "moment": "^2.22.2",
     "nprogress": "^0.2.0",
     "nuxt": "^2.2.0",
     "vee-validate": "^2.1.3",
