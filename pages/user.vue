@@ -57,8 +57,11 @@
                       <v-flex xs12>
                         <v-text-field name="userId" v-model="editedItem.userId" label="ID" :readonly="formTitle !== '회원 생성'" :required="formTitle === '회원 생성'"></v-text-field>
                       </v-flex>
-                      <v-flex xs12>
+                      <v-flex xs12 sm6>
                         <v-text-field name="email" v-model="editedItem.email" label="이메일"></v-text-field>
+                      </v-flex>
+                      <v-flex xs12 sm6>
+                        <v-text-field name="password" type="password" v-model="editedItem.password" label="비밀번호" :required="formTitle === '회원 생성'" :placeholder="formTitle !== '회원 생성'?'입력하면 변경, 비우면 변경안함':null"></v-text-field>
                       </v-flex>
                       <template v-if="formTitle !== '회원 생성'">
                         <v-flex xs12 sm6>
@@ -68,9 +71,6 @@
                           <v-text-field name="topicNickName" v-model="editedItem.topicNickName" label="토픽 필명"></v-text-field>
                         </v-flex>
                       </template>                      
-                      <v-flex xs12>
-                        <v-text-field name="password" type="password" v-model="editedItem.password" label="비밀번호" :required="formTitle === '회원 생성'" :placeholder="formTitle !== '회원 생성'?'입력하면 해당 값으로 변경, 없으면 변경안함':false"></v-text-field>
-                      </v-flex>
                       <v-flex xs12 sm6>
                         <v-select name="status" v-model="editedItem.status" :items="userStatusItems" label="상태"></v-select>
                       </v-flex>
@@ -286,13 +286,17 @@ export default {
       this.loading = false;
     },
     editItem(item) {
-      this.editedIndex = this.users.indexOf(item);
+      this.editedIndex = this.users.map(x=>x.userId).indexOf(item.userId);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem: async function(item) {
-      const index = this.users.indexOf(item);
+      const index = this.users.map(x=>x.userId).indexOf(item.userId);
+      if(index < 0){
+        alert('선택된 회원이 없습니다. 확인 후 다시 시도해주세요.');
+        return;
+      }
       if (confirm("정말 이 회원을 삭제하시겠습니까? 해당 회원이 작성한 글 등은 유지되고, 소유한 토픽이 있을 경우 삭제가 불가능합니다.")) {
         this.loading = true;
         let response;
@@ -304,9 +308,10 @@ export default {
           return;
         }
         if (response.status === 200) {
-          this.users.splice(index, 1);
           this.$router.app.$emit("showSnackbar", `${this.users[index].userId} 회원을 삭제하였습니다.`, "success");
+          this.users.splice(index, 1);
         }
+        this.close();
         this.loading = false;
       }
     },
@@ -349,6 +354,8 @@ export default {
           return;
         }
         if (response.status === 200) {
+          this.editedItem.loungeNickName = response.data.nickName;
+          this.editedItem.topicNickName = response.data.nickName;
           this.users.push(this.editedItem);
           this.$router.app.$emit("showSnackbar", `${this.editedItem.userId} 회원을 추가하였습니다.`, "success");
         }
@@ -356,8 +363,6 @@ export default {
       this.close();
     },
     removeChip(props, item) {
-      console.log(props.parent);
-      console.log(item);
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
     }
   },
