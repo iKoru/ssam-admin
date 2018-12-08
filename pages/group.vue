@@ -103,11 +103,11 @@
 <script>
 // import PlainTable from "~/components/PlainTable";
 // import PlainTableOrder from "~/components/PlainTableOrder";
-import config from "~/assets/js/config";
+
 export default {
   data: () => ({
     dialog: false,
-    headers: [{text: "그룹ID", value: "groupId"}, {text: "그룹 이름", align:'left', value: "groupName"}, {text: "그룹 종류", align:'left', value: "groupType"}, {text: "유지기간", value: "expirePeriod"}, {text: "상위그룹", sortable: false, value: "parentGroupId"}, {text: "공개 여부", value: "isOpenToUsers"}],
+    headers: [{text: "그룹ID", value: "groupId"}, {text: "그룹 이름", align: "left", value: "groupName"}, {text: "그룹 종류", align: "left", value: "groupType"}, {text: "유지기간", value: "expirePeriod"}, {text: "상위그룹", sortable: false, value: "parentGroupId"}, {text: "공개 여부", value: "isOpenToUsers"}],
     groups: [],
     editedIndex: -1,
     editedItem: {
@@ -131,20 +131,24 @@ export default {
       groupIconPath: ""
     },
     loading: true,
-    pagination: {rowsPerPage:10},
+    pagination: {rowsPerPage: 10},
     groupTypeItems: [{text: "전공", value: "M"}, {text: "학년", value: "G"}, {text: "지역", value: "R"}, {text: "일반 그룹", value: "N"}],
     groupItems: [],
     searchQuery: null,
     searchGroupType: null,
     searchTarget: "groupName",
-    searchTargetItems: [{text:'그룹이름', value:'groupName'}, {text:'그룹종류', value:'groupType'}],
+    searchTargetItems: [{text: "그룹이름", value: "groupName"}, {text: "그룹종류", value: "groupType"}],
     noresult: "표시할 결과가 없습니다.",
-    search:null,
+    search: null,
     customFilter: function(items, search, filter) {
-      const searchTarget = search && typeof search !== 'boolean'?search.toString().toLowerCase():search;
-      return this.$parent.searchTarget !== 'groupType'? items.filter(i => (
-        Object.keys(i).filter(k=> k !== 'groupType').some(j => filter(i[j], searchTarget))
-      )) : items.filter(i => i.groupType === search);
+      const searchTarget = search && typeof search !== "boolean" ? search.toString().toLowerCase() : search;
+      return this.$parent.searchTarget !== "groupType"
+        ? items.filter(i =>
+            Object.keys(i)
+              .filter(k => k !== "groupType")
+              .some(j => filter(i[j], searchTarget))
+          )
+        : items.filter(i => i.groupType === search);
     }
   }),
 
@@ -158,10 +162,10 @@ export default {
     dialog(val) {
       val || this.close();
     },
-    searchQuery(val){
+    searchQuery(val) {
       this.search = val;
     },
-    searchGroupType(val){
+    searchGroupType(val) {
       this.search = val;
     }
   },
@@ -177,12 +181,11 @@ export default {
   methods: {
     getDataFromApi: async function() {
       this.loading = true;
-      let groups = await this.$axios.get(`${config.apiServerHost}/group`);
+      let groups = await this.$axios.get("/group");
       if (groups.status === 200) {
-        this.groupItems = groups.data
-          .map(x => {
-            return {text: x.groupName, value: x.groupId};
-          });
+        this.groupItems = groups.data.map(x => {
+          return {text: x.groupName, value: x.groupId};
+        });
         this.groups = groups.data;
       } else {
         this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
@@ -190,22 +193,22 @@ export default {
       this.loading = false;
     },
     editItem(item) {
-      this.editedIndex = this.groups.map(x=>x.groupId).indexOf(item.groupId);
+      this.editedIndex = this.groups.map(x => x.groupId).indexOf(item.groupId);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem: async function(item) {
-      const index = this.groups.map(x=>x.groupId).indexOf(item.groupId);
-      if(index < 0){
-        alert('선택된 그룹이 없습니다. 확인 후 다시 시도해주세요.');
+      const index = this.groups.map(x => x.groupId).indexOf(item.groupId);
+      if (index < 0) {
+        alert("선택된 그룹이 없습니다. 확인 후 다시 시도해주세요.");
         return;
       }
       if (confirm("정말 이 그룹을 삭제하시겠습니까? 이 그룹에 속해있는 회원들은 모두 그룹에서 해제됩니다.")) {
         this.loading = true;
         let response;
         try {
-          response = await this.$axios.delete(`${config.apiServerHost}/group/${this.groups[index].groupId}`);
+          response = await this.$axios.delete(`/group/${this.groups[index].groupId}`);
         } catch (err) {
           this.$router.app.$emit("showSnackbar", `그룹을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
           this.loading = false;
@@ -233,7 +236,7 @@ export default {
         //update
         let response;
         try {
-          response = await this.$axios.put(`${config.apiServerHost}/group`, this.editedItem);
+          response = await this.$axios.put("/group", this.editedItem);
         } catch (err) {
           this.$router.app.$emit("showSnackbar", `그룹정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
           return;
@@ -245,7 +248,7 @@ export default {
         //create
         let response;
         try {
-          response = await this.$axios.post(`${config.apiServerHost}/group`, this.editedItem);
+          response = await this.$axios.post("/group", this.editedItem);
         } catch (err) {
           this.$router.app.$emit("showSnackbar", `그룹을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
           return;
@@ -258,7 +261,6 @@ export default {
       }
       this.close();
     }
-    
   },
   layout: "main",
   head() {

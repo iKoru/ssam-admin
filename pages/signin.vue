@@ -30,60 +30,63 @@
 
 <script>
 /* global localStorage */
-import config from '~/assets/js/config'
+import config from "~/assets/js/config";
 export default {
-  layout:'public',
+  layout: "public",
   data: () => ({
     loading: false,
     message: null,
-    userId: process.browser ? localStorage.getItem("userId")|| "" : "",
+    userId: process.browser ? localStorage.getItem("userId") || "" : "",
     password: ""
   }),
-  meta:{
-    public:true
+  meta: {
+    public: true
   },
   created() {
+    this.$axios.defaults.baseURL = config.apiServerHost;
     if (process.browser) {
       const token = localStorage.getItem("accessToken");
       if (token) {
         this.loading = true;
         this.$axios({
           method: "POST",
-          url: `${config.apiServerHost}/refresh`,
+          url: "/refresh",
           headers: {"x-auth": token}
         })
-        .then(response => {
-          console.log(response);
-          this.$axios({
-            url:`${config.apiServerHost}/check`,
-            method:'GET',
-            headers:{'x-auth':response.data.token}
-          }).then(profile => {
+          .then(response => {
+            console.log(response);
+            this.$axios({
+              url: "/check",
+              method: "GET",
+              headers: {"x-auth": response.data.token}
+            })
+              .then(profile => {
+                this.loading = false;
+                localStorage.setItem("accessToken", response.data.token);
+                this.$axios.defaults.headers.common["x-auth"] = response.data.token;
+                this.$store.dispatch("signin", {
+                  accessToken: response.data.token
+                });
+                this.$router.push("/");
+              })
+              .catch(err => {
+                this.loading = false;
+                this.message = err.response.data.message;
+                console.log(err.response.data.target);
+                if (err.response.data.target && this.$refs[err.response.data.target]) {
+                  this.$refs[err.response.data.target].$el.focus();
+                }
+              });
+          })
+          .catch(err => {
             this.loading = false;
-            localStorage.setItem("accessToken", response.data.token);
-            this.$axios.defaults.headers.common["x-auth"] = response.data.token;
-            this.$store.dispatch("signin", {
-              accessToken: response.data.token
-            });
-            this.$router.push("/");
-          }).catch(err => {
-            this.loading = false;
+            console.log(err.response);
+            localStorage.removeItem("accessToken");
             this.message = err.response.data.message;
-            console.log(err.response.data.target);
             if (err.response.data.target && this.$refs[err.response.data.target]) {
               this.$refs[err.response.data.target].$el.focus();
             }
-          })
-        })
-        .catch(err => {
-          this.loading = false;
-          console.log(err.response);
-          localStorage.removeItem('accessToken');
-          this.message = err.response.data.message;
-          if (err.response.data.target && this.$refs[err.response.data.target]) {
-            this.$refs[err.response.data.target].$el.focus();
-          }
-        });
+          });
       }
     }
   },
@@ -99,48 +102,50 @@ export default {
         this.message = null;
         this.loading = true;
         this.$axios
-        .post(`${config.apiServerHost}/signin`, {
-          userId: this.userId,
-          password: this.password
-        })
-        .then(response => {
-          console.log(response);
-          this.$axios({
-            url:`${config.apiServerHost}/check`,
-            method:'GET',
-            headers:{'x-auth':response.data.token}
-          }).then(profile => {
+          .post("/signin", {
+            userId: this.userId,
+            password: this.password
+          })
+          .then(response => {
+            console.log(response);
+            this.$axios({
+              url: "/check",
+              method: "GET",
+              headers: {"x-auth": response.data.token}
+            })
+              .then(profile => {
+                this.loading = false;
+                localStorage.setItem("accessToken", response.data.token);
+                this.$axios.defaults.headers.common["x-auth"] = response.data.token;
+                this.$store.dispatch("signin", {
+                  accessToken: response.data.token
+                });
+                this.$router.push("/");
+              })
+              .catch(err => {
+                this.loading = false;
+                this.message = err.response.data.message;
+                console.log(err.response.data.target);
+                if (err.response.data.target && this.$refs[err.response.data.target]) {
+                  this.$refs[err.response.data.target].$el.focus();
+                }
+              });
+          })
+          .catch(err => {
             this.loading = false;
-            localStorage.setItem("accessToken", response.data.token);
-            this.$axios.defaults.headers.common["x-auth"] = response.data.token;
-            this.$store.dispatch("signin", {
-              accessToken: response.data.token
-            });
-            this.$router.push("/");
-          }).catch(err => {
-            this.loading = false;
+            console.log(err.response);
             this.message = err.response.data.message;
-            console.log(err.response.data.target);
             if (err.response.data.target && this.$refs[err.response.data.target]) {
               this.$refs[err.response.data.target].$el.focus();
             }
-          })
-        })
-        .catch(err => {
-          this.loading = false;
-          console.log(err.response);
-          this.message = err.response.data.message;
-          if (err.response.data.target && this.$refs[err.response.data.target]) {
-            this.$refs[err.response.data.target].$el.focus();
-          }
-        });
+          });
       }
     }
   },
-  head(){
+  head() {
     return {
-      title: '로그인'
-    }
+      title: "로그인"
+    };
   }
 };
 </script>
@@ -151,7 +156,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  content: "";
+  content: '';
   z-index: 0;
 }
 </style>

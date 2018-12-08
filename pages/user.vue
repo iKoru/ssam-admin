@@ -140,7 +140,7 @@
 <script>
 // import PlainTable from "~/components/PlainTable";
 // import PlainTableOrder from "~/components/PlainTableOrder";
-import config from "~/assets/js/config";
+
 export default {
   data: () => ({
     dialog: false,
@@ -210,7 +210,7 @@ export default {
   },
 
   created: async function() {
-    let groups = await this.$axios.get(`${config.apiServerHost}/group`);
+    let groups = await this.$axios.get('/group');
     if (groups.status === 200) {
       this.majorItems = groups.data
         .filter(x => x.groupType === "M")
@@ -261,7 +261,7 @@ export default {
       }
       let response;
       try {
-        response = await this.$axios.get(`${config.apiServerHost}/user/list`, {params: query});
+        response = await this.$axios.get('/user/list', {params: query});
       } catch (err) {
         if (err.response.status !== 200) {
           this.loading = false;
@@ -301,7 +301,7 @@ export default {
         this.loading = true;
         let response;
         try {
-          response = await this.$axios.delete(`${config.apiServerHost}/user/${this.users[index].userId}`);
+          response = await this.$axios.delete(`/user/${this.users[index].userId}`);
         } catch (err) {
           this.$router.app.$emit("showSnackbar", `회원을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
           this.loading = false;
@@ -329,7 +329,7 @@ export default {
         //update
         let response;
         try {
-          response = await this.$axios.put(`${config.apiServerHost}/user`, this.editedItem);
+          response = await this.$axios.put('/user', this.editedItem);
         } catch (err) {
           if(!(err.response.status === 400 && err.response.data.message === '변경된 내용이 없습니다.')){
             this.$router.app.$emit("showSnackbar", `회원정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
@@ -338,7 +338,7 @@ export default {
         }
 
         try{
-          response = await this.$axios.put(`${config.apiServerHost}/user/group`, {userId:this.editedItem.userId, groups:this.editedItem.groups.concat(this.editedItem.major, this.editedItem.grade, this.editedItem.region)})
+          response = await this.$axios.put('/user/group', {userId:this.editedItem.userId, groups:this.editedItem.groups.concat(this.editedItem.major, this.editedItem.grade, this.editedItem.region)})
         } catch (err){
           this.$router.app.$emit("showSnackbar", `회원 공통정보 수정완료 후 전공/지역/학년/그룹 정보를 수정하는 도중 오류가 발생했습니다.[${err.response.data.message}]`, 'error')
         }
@@ -348,7 +348,7 @@ export default {
         //create
         let response;
         try {
-          response = await this.$axios.post(`${config.apiServerHost}/user`, this.editedItem);
+          response = await this.$axios.post('/user', this.editedItem);
         } catch (err) {
           this.$router.app.$emit("showSnackbar", `회원을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
           return;

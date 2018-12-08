@@ -137,7 +137,7 @@
 <script>
 // import PlainTable from "~/components/PlainTable";
 // import PlainTableOrder from "~/components/PlainTableOrder";
-import config from "~/assets/js/config";
+
 export default {
   data: () => ({
     dialog: false,
@@ -211,7 +211,7 @@ export default {
   },
 
   created: async function() {
-    let groups = await this.$axios.get(`${config.apiServerHost}/group`);
+    let groups = await this.$axios.get('/group');
     if (groups.status === 200) {
       this.groupItems = groups.data.map(x => {
         return {text: x.groupName, value: x.groupId};
@@ -244,7 +244,7 @@ export default {
       }
       let response;
       try {
-        response = await this.$axios.get(`${config.apiServerHost}/board/list`, {params: query});
+        response = await this.$axios.get('/board/list', {params: query});
       } catch (err) {
         if (err.response.status !== 200) {
           this.loading = false;
@@ -276,7 +276,7 @@ export default {
         this.loading = true;
         let response;
         try {
-          response = await this.$axios.delete(`${config.apiServerHost}/board/${this.boards[index].boardId}`);
+          response = await this.$axios.delete(`/board/${this.boards[index].boardId}`);
         } catch (err) {
           this.$router.app.$emit("showSnackbar", `게시판을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
           this.loading = false;
@@ -316,7 +316,7 @@ export default {
 
         let response;
         try {
-          response = await this.$axios.put(`${config.apiServerHost}/board`, this.editedItem);
+          response = await this.$axios.put('/board', this.editedItem);
         } catch (err) {
           this.$router.app.$emit("showSnackbar", `게시판정보를 변경(예약)하지 못했습니다.[${err.response.data.message}]`, "error");
           return;
@@ -328,7 +328,7 @@ export default {
         //create
         let response;
         try {
-          response = await this.$axios.post(`${config.apiServerHost}/board`, this.editedItem);
+          response = await this.$axios.post('/board', this.editedItem);
         } catch (err) {
           this.$router.app.$emit("showSnackbar", `게시판을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
           return;
