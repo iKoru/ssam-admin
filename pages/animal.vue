@@ -1,16 +1,75 @@
 <template>
-  <div id="pageDashboard">
+  <div id="pageAnimal">
     <v-container grid-list-xl fluid>
-      <v-layout row wrap>
-        <v-flex sm12>pedagy 관리자 페이지에 오신것을 환영합니다.</v-flex>
-        <v-flex lg7 sm12 xs12>
-          animal management
-          <!--<plain-table></plain-table>-->
-        </v-flex>
-        <v-flex lg5 sm12 xs12>
-          aaa
-          <!--<plain-table-order></plain-table-order>-->
-        </v-flex>
+      <v-layout row wrap class="elevation-1" white>
+        <!--<v-content class="elevation-1 pt-0">-->
+        <v-toolbar flat color="white">
+          <v-toolbar-title>동물명 관리</v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <v-form class="px-3 pt-2 white">
+          <v-layout wrap xs12 pa-2>
+            <v-text-field name="search" pa-2 v-model="search" label="검색" append-icon="search"></v-text-field>
+          </v-layout>
+        </v-form>
+
+        <v-data-table v-model="selected" select-all :headers="headers" item-key="animalName" :items="animals" id="animalTable" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination">
+          <template slot="headers" slot-scope="props">
+            <tr>
+              <th>
+                <v-checkbox :input-value="props.all" :indeterminate="props.indeterminate" primary hide-details @click.native="toggleAll"></v-checkbox>
+              </th>
+              <th v-for="header in props.headers" :key="header.text" :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '', header.align?'text-xs-'+header.align:'']" @click="changeSort(header.value)">
+                {{ header.text }}
+                <v-icon small>arrow_upward</v-icon>
+              </th>
+            </tr>
+          </template>
+          <template slot="items" slot-scope="props">
+            <tr :active="props.selected" @click="props.selected = !props.selected">
+              <td>
+                <v-checkbox :input-value="props.selected" primary hide-details></v-checkbox>
+              </td>
+              <td class="text-xs-left">{{ props.item.animalName }}</td>
+            </tr>
+          </template>
+          <template slot="no-data">
+            {{this.noresult}}
+            <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
+          </template>
+          <template slot="actions-prepend">
+            <v-btn color="error" @click="deleteItem" :disabled="selected.length === 0">삭제</v-btn>
+            <v-dialog v-model="dialog" max-width="500px" lazy>
+              <v-btn slot="activator" color="primary" dark class="mb-2">생성</v-btn>
+              <v-card>
+                <v-card-title>
+                  <span class="headline">동물명 생성</span>
+                </v-card-title>
+
+                <v-card-text>
+                  <v-container grid-list-md>
+                    <v-layout wrap>
+                      <v-flex xs12>
+                        <v-text-field name="animalName" label="추가할 동물명" placeholder="여러개 동시 입력은 컴마로 구분합니다."></v-text-field>
+                      </v-flex>
+                      <v-flex xs12>
+                        <v-chip close v-for="animalName in editedItem.animalNames" :key="animalName">{{animalName}}</v-chip>
+                      </v-flex>
+                    </v-layout>
+                  </v-container>
+                </v-card-text>
+
+                <v-card-actions class="pa-3">
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" flat @click="close">취소</v-btn>
+                  <v-btn color="primary" dark @click="save">생성</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-spacer></v-spacer>
+          </template>
+        </v-data-table>
+        <!--</v-content>-->
       </v-layout>
     </v-container>
   </div>
@@ -19,18 +78,130 @@
 <script>
 // import PlainTable from "~/components/PlainTable";
 // import PlainTableOrder from "~/components/PlainTableOrder";
+
 export default {
-  // components: {
-  //   PlainTable,
-  //   PlainTableOrder
-  // },
-  layout:'main',
-  data: () => ({}),
-  computed: {},
-  head(){
-    return {
-      title: '동물명 관리'
+  data: () => ({
+    dialog: false,
+    headers: [{text: "동물명", align: "left", value: "animalName"}],
+    animals: [],
+    editedItem: {
+      animalNames: []
+    },
+    defaultItem: {
+      animalNames: []
+    },
+    selected: [],
+    loading: true,
+    pagination: {sortBy: "animalName", rowsPerPage: 10, descending: false},
+    noresult: "표시할 결과가 없습니다.",
+    search: null
+  }),
+
+  watch: {
+    dialog(val) {
+      val || this.close();
     }
+  },
+
+  created: async function() {
+    await this.getDataFromApi();
+  },
+
+  methods: {
+    getDataFromApi: async function() {
+      this.loading = true;
+      let animals = await this.$axios.get("/comment/animal");
+      if (animals.status === 200) {
+        this.animals = animals.data.map(x => {
+          return {
+            animalName: x
+          };
+        });
+        console.log(this.animals);
+      } else {
+        this.$router.app.$emit("showSnackbar", `동물명 리스트를 불러오지 못했습니다.[${animals.data.message}]`, "error");
+      }
+      this.loading = false;
+    },
+
+    deleteItem: async function(item) {
+      if (this.selected.length === 0) {
+        alert("선택된 동물명이 없습니다. 확인 후 다시 시도해주세요.");
+        return;
+      }
+      if (confirm(`정말 동물명 ${this.selected.length}개를 삭제하시겠습니까? 삭제된 동물명을 사용하고 있는 사람들의 동물명은 유지됩니다.`)) {
+        this.loading = true;
+        let response;
+        try {
+          response = await this.$axios.delete("/comment/animal/" + this.selected[0], {animalNames: this.selected});
+        } catch (err) {
+          this.$router.app.$emit("showSnackbar", `동물명을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
+          this.loading = false;
+          return;
+        }
+        if (response.status === 200) {
+          this.$router.app.$emit("showSnackbar", `${this.selected.length === 1 ? this.selected[0] : this.selected.length + "개의"} 동물명을 삭제하였습니다.`, "success");
+          this.animals = this.animals.filter(x => !this.selected.includes(x.animalName));
+          this.selected = [];
+        }
+        this.loading = false;
+      }
+    },
+
+    close() {
+      this.dialog = false;
+      setTimeout(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      }, 300);
+    },
+
+    save: async function() {
+      let response;
+      try {
+        response = await this.$axios.post("/comment/animal", this.editedItem);
+      } catch (err) {
+        this.$router.app.$emit("showSnackbar", `동물명을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+        return;
+      }
+      if (response.status === 200) {
+        this.animals.concat(
+          this.editedItem.animalNames.map(x => {
+            animalName: x;
+          })
+        );
+        this.$router.app.$emit("showSnackbar", `${this.editedItem.animalNames.length === 1 ? this.editedItem.animalNames[0] : this.editedItem.animalNames.length + "개의"} 동물명을 추가하였습니다.`, "success");
+      }
+      this.close();
+    },
+    toggleAll() {
+      if (this.selected.length) this.selected = [];
+      else this.selected = this.animals.slice();
+    },
+    changeSort(column) {
+      if (this.pagination.sortBy === column) {
+        this.pagination.descending = !this.pagination.descending;
+      } else {
+        this.pagination.sortBy = column;
+        this.pagination.descending = false;
+      }
+    }
+  },
+  layout: "main",
+  head() {
+    return {
+      title: "동물명 관리"
+    };
   }
 };
 </script>
+
+<style lang="stylus">
+#animalTable {
+  width: 100%;
+
+  .v-datatable__actions {
+    justify-content: space-between;
+  }
+}
+</style>
