@@ -39,7 +39,7 @@
           </template>
           <template slot="actions-prepend">
             <v-btn color="error" @click="deleteItem" :disabled="selected.length === 0">삭제</v-btn>
-            <v-dialog v-model="dialog" max-width="500px" lazy>
+            <v-dialog v-model="dialog" max-width="500px">
               <v-btn slot="activator" color="primary" dark class="mb-2">생성</v-btn>
               <v-card>
                 <v-card-title>
@@ -50,10 +50,15 @@
                   <v-container grid-list-md>
                     <v-layout wrap>
                       <v-flex xs12>
-                        <v-text-field name="animalName" label="추가할 동물명" placeholder="여러개 동시 입력은 컴마로 구분합니다."></v-text-field>
+                        <v-text-field ref="candidate" name="animalName" label="추가할 동물명 입력" placeholder="여러개 동시 입력은 컴마로 구분합니다." hint="입력 후 엔터를 입력하면 연속으로 입력할 수 있습니다." v-model="candidate" @keyup.enter="addChips(candidate)" clearable></v-text-field>
                       </v-flex>
                       <v-flex xs12>
-                        <v-chip close v-for="animalName in editedItem.animalNames" :key="animalName">{{animalName}}</v-chip>
+                        <span>입력된 동물명</span>
+                        <br>
+                        <template v-if="editedItem.animalNames.length > 0">
+                          <v-chip close v-for="animalName in editedItem.animalNames" :key="animalName" @input="removeChip(animalName)">{{animalName}}</v-chip>
+                        </template>
+                        <p v-else class="text-xs-center">아직 입력된 동물명이 없습니다.</p>
                       </v-flex>
                     </v-layout>
                   </v-container>
@@ -85,21 +90,23 @@ export default {
     headers: [{text: "동물명", align: "left", value: "animalName"}],
     animals: [],
     editedItem: {
-      animalNames: []
-    },
-    defaultItem: {
-      animalNames: []
+      animalNames: [],
+      animalNamesSet: new Set()
     },
     selected: [],
     loading: true,
     pagination: {sortBy: "animalName", rowsPerPage: 10, descending: false},
     noresult: "표시할 결과가 없습니다.",
-    search: null
+    search: null,
+    candidate: null
   }),
 
   watch: {
     dialog(val) {
       val || this.close();
+      if (val) {
+        this.$nextTick(this.$refs.candidate.focus);
+      }
     }
   },
 
@@ -131,18 +138,24 @@ export default {
       }
       if (confirm(`정말 동물명 ${this.selected.length}개를 삭제하시겠습니까? 삭제된 동물명을 사용하고 있는 사람들의 동물명은 유지됩니다.`)) {
         this.loading = true;
-        let response;
-        try {
-          response = await this.$axios.delete("/comment/animal/" + this.selected[0], {animalNames: this.selected});
-        } catch (err) {
-          this.$router.app.$emit("showSnackbar", `동물명을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
-          this.loading = false;
-          return;
+        let response,
+          i = 0,
+          success = [];
+        while (i < this.selected.length) {
+          try {
+            response = await this.$axios.delete("/comment/animal/" + this.selected[i].animalName);
+          } catch (err) {
+            this.$router.app.$emit("showSnackbar", `${this.selected[i].animalName} 동물명을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
+          }
+          if (response.status === 200) {
+            success.push(this.selected[i].animalName);
+          }
+          i++;
         }
-        if (response.status === 200) {
-          this.$router.app.$emit("showSnackbar", `${this.selected.length === 1 ? this.selected[0] : this.selected.length + "개의"} 동물명을 삭제하였습니다.`, "success");
-          this.animals = this.animals.filter(x => !this.selected.includes(x.animalName));
-          this.selected = [];
+        if (success.length > 0) {
+          this.$router.app.$emit("showSnackbar", `${success.length === 1 ? success[0] : success.length + "개의"} 동물명을 삭제하였습니다.`, "success");
+          this.selected = this.selected.filter(x => !success.includes(x.animalName));
+          this.animals = this.animals.filter(x => !success.includes(x.animalName));
         }
         this.loading = false;
       }
@@ -151,23 +164,26 @@ export default {
     close() {
       this.dialog = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
+        this.editedItem.animalNamesSet.clear();
+        this.editedItem.animalNames = [];
       }, 300);
     },
 
     save: async function() {
       let response;
+      if (this.candidate && this.candidate !== "") {
+        this.addChips(this.candidate);
+      }
       try {
-        response = await this.$axios.post("/comment/animal", this.editedItem);
+        response = await this.$axios.post("/comment/animal", {animalNames: this.editedItem.animalNames});
       } catch (err) {
         this.$router.app.$emit("showSnackbar", `동물명을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
         return;
       }
       if (response.status === 200) {
-        this.animals.concat(
+        this.animals = this.animals.concat(
           this.editedItem.animalNames.map(x => {
-            animalName: x;
+            return {animalName: x};
           })
         );
         this.$router.app.$emit("showSnackbar", `${this.editedItem.animalNames.length === 1 ? this.editedItem.animalNames[0] : this.editedItem.animalNames.length + "개의"} 동물명을 추가하였습니다.`, "success");
@@ -184,6 +200,26 @@ export default {
       } else {
         this.pagination.sortBy = column;
         this.pagination.descending = false;
+      }
+    },
+    addChips(candidate) {
+      if (typeof candidate === "string") {
+        candidate.split(",").forEach(x => {
+          if (x !== "") {
+            if (this.editedItem.animalNamesSet.has(x) || this.animals.some(y => y.animalName === x)) {
+              this.$router.app.$emit("showSnackbar", `${x} : 이미 (임시로) 입력된 동물명입니다.`, "error");
+              return;
+            }
+            this.editedItem.animalNamesSet.add(x);
+            this.editedItem.animalNames.push(x);
+          }
+        });
+        this.candidate = null;
+      }
+    },
+    removeChip(item) {
+      if (this.editedItem.animalNamesSet.delete(item)) {
+        this.editedItem.animalNames.splice(this.editedItem.animalNames.indexOf(item), 1);
       }
     }
   },
