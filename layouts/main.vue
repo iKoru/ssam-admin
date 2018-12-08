@@ -19,9 +19,9 @@
         <span class="caption mr-1">Make With Love</span>
         <v-icon color="pink" small>favorite</v-icon>
       </v-footer>
-      <v-snackbar :timeout="5000" bottom left :color="snackbar.color" v-model="snackbar.show">
+      <v-snackbar :timeout="5000" bottom left :color="snackbar.color" v-model="isShowingSnackbar">
         {{ snackbar.text }}
-        <v-btn dark flat @click.native="snackbar.show = false" icon>
+        <v-btn dark flat @click.native="isShowingSnackbar = false" icon>
           <v-icon>close</v-icon>
         </v-btn>
       </v-snackbar>
@@ -45,32 +45,48 @@ export default {
     expanded: true,
     rightDrawer: false,
     snackbar: {
-      show: false,
       text: "",
       color: ""
-    }
+    },
+    isShowingSnackbar: false,
+    waiting: []
   }),
 
   computed: {},
-
+  watch: {
+    isShowingSnackbar(val) {
+      if (!val && this.waiting.length > 0) {
+        const wait = this.waiting.shift();
+        if (wait.text) {
+          this.$nextTick(() => {
+            this.showSnackbar(wait.text, wait.color);
+          });
+        }
+      }
+    }
+  },
   methods: {
     drawerToggled(callback) {
       this.$refs.appDrawer.toggleDrawer();
     },
-    showSnackbar(text, color){
-      this.snackbar.text = text;
-      this.snackbar.color = color;
-      this.snackbar.show = true;
+    showSnackbar(text, color) {
+      if (!this.isShowingSnackbar) {
+        this.snackbar.text = text;
+        this.snackbar.color = color || "info";
+        this.isShowingSnackbar = true;
+      } else {
+        this.waiting.push({text: text, color: color});
+      }
     }
   },
   created() {
     AppEvents.forEach(item => {
       this.$on(item.name, item.callback);
     });
-    this.$router.app.$on('showSnackbar', this.showSnackbar);
+    this.$router.app.$on("showSnackbar", this.showSnackbar);
     // window.getApp = this;
   },
-  middleware:'requireAuth'
+  middleware: "requireAuth"
 };
 </script>
 
