@@ -6,7 +6,7 @@ const Menu = [
     icon: 'dashboard',
     name: 'index',
   },
-  {header: '회원'},
+  { header: '회원' },
   {
     title: '회원 관리',
     group: 'user',
@@ -19,36 +19,36 @@ const Menu = [
     icon: 'group',
     name: 'group',
   },
-  {header: '게시판'},
+  { header: '게시판' },
   {
-    title:'게시판 관리',
-    group:'board',
-    icon:'folder',
-    name:'board'
+    title: '게시판 관리',
+    group: 'board',
+    icon: 'folder',
+    name: 'board'
   },
   {
-    title:'신고종류 관리',
-    group:'board',
-    icon:'flag',
-    name:'reportType'
+    title: '신고종류 관리',
+    group: 'board',
+    icon: 'flag',
+    name: 'reportType'
   },
   {
-    title:'게시물 신고 관리',
-    group:'board',
-    icon:'report',
-    name:'report'
+    title: '게시물 신고 관리',
+    group: 'board',
+    icon: 'report',
+    name: 'report'
   },
   {
-    title:'회원별 게시물 관리',
-    group:'board',
-    icon:'folder_shared',
-    name:'userDocument'
+    title: '회원 게시물 조회',
+    group: 'board',
+    icon: 'folder_shared',
+    name: 'userDocument'
   },
   {
-    title:'동물명 관리',
-    group:'board',
-    icon:'style',
-    name:'animal'
+    title: '동물명 관리',
+    group: 'board',
+    icon: 'style',
+    name: 'animal'
   }
 ];
 // reorder menu
