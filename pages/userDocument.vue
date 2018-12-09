@@ -87,8 +87,6 @@
 </template>
 
 <script>
-// import PlainTable from "~/components/PlainTable";
-// import PlainTableOrder from "~/components/PlainTableOrder";
 import config from "~/assets/js/config";
 export default {
   data: () => ({

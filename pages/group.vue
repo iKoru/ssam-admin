@@ -2,7 +2,6 @@
   <div id="pageGroup">
     <v-container grid-list-xl fluid>
       <v-layout row wrap class="elevation-1" white>
-        <!--<v-content class="elevation-1 pt-0">-->
         <v-toolbar flat color="white">
           <v-toolbar-title>그룹 관리</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -37,7 +36,7 @@
             <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
           </template>
           <template slot="actions-prepend">
-            <v-dialog v-model="dialog" max-width="500px">
+            <v-dialog v-model="dialog" max-width="500px" :fullscreen="$vuetify.breakpoint.smAndDown">
               <v-btn slot="activator" color="primary" dark class="mb-2">신규그룹 생성</v-btn>
               <v-card>
                 <v-card-title>
@@ -94,16 +93,12 @@
             <v-spacer></v-spacer>
           </template>
         </v-data-table>
-        <!--</v-content>-->
       </v-layout>
     </v-container>
   </div>
 </template>
 
 <script>
-// import PlainTable from "~/components/PlainTable";
-// import PlainTableOrder from "~/components/PlainTableOrder";
-
 export default {
   data: () => ({
     dialog: false,
