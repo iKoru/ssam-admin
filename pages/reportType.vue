@@ -14,7 +14,7 @@
 
         <v-data-table :headers="headers" :items="reportTypes" id="reportTypeTable" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination">
           <template slot="items" slot-scope="props">
-            <tr @dblclick="editItem(props.item)">
+            <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
               <td>{{ props.item.reportTypeId }}</td>
               <td class="text-xs-left">{{ props.item.reportTypeName }}</td>
               <td class="text-xs-left">{{ props.item.reportTypeDescription }}</td>
@@ -30,6 +30,8 @@
               <v-card>
                 <v-card-title>
                   <span class="headline">{{ formTitle }}</span>
+                  <v-spacer></v-spacer>
+                  <v-icon @click="close">close</v-icon>
                 </v-card-title>
 
                 <v-card-text>
@@ -92,7 +94,8 @@ export default {
     loading: true,
     pagination: {rowsPerPage: 10},
     noresult: "표시할 결과가 없습니다.",
-    search: null
+    search: null,
+    touching: null
   }),
 
   computed: {
@@ -190,6 +193,14 @@ export default {
         }
       }
       this.close();
+    },
+    touchStart(item){
+      this.touching = item.boardId;
+    },
+    touchEnd(item){
+      if(this.touching === item.boardId){
+        this.editItem(item);
+      }
     }
   },
   layout: "main",

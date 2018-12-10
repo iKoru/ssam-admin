@@ -23,7 +23,7 @@
 
         <v-data-table :headers="headers" :items="boards" id="boardTable" :loading="loading" :total-items="totalBoards" :pagination.sync="pagination" :no-data-text="noresult">
           <template slot="items" slot-scope="props">
-            <tr @dblclick="editItem(props.item)">
+            <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
               <td>{{ props.item.boardId }}</td>
               <td class="text-xs-left">{{ props.item.boardName }}</td>
               <td class="text-xs-left">{{ props.item.ownerId }}</td>
@@ -46,6 +46,8 @@
               <v-card>
                 <v-card-title>
                   <span class="headline">{{ formTitle }}</span>
+                  <v-spacer></v-spacer>
+                  <v-icon @click="close">close</v-icon>
                 </v-card-title>
 
                 <v-card-text>
@@ -185,6 +187,7 @@ export default {
     searchTarget: "boardId",
     searchStatus: null,
     searchType: null,
+    touching: null,
     noresult: "표시할 결과가 없습니다."
   }),
 
@@ -340,6 +343,14 @@ export default {
     },
     removeChip(props, item) {
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
+    },
+    touchStart(item){
+      this.touching = item.boardId;
+    },
+    touchEnd(item){
+      if(this.touching === item.boardId){
+        this.editItem(item);
+      }
     }
   },
   layout: "main",

@@ -20,7 +20,7 @@
 
         <v-data-table :headers="headers" :items="groups" id="groupTable" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination" :custom-filter="customFilter">
           <template slot="items" slot-scope="props">
-            <tr @dblclick="editItem(props.item)">
+            <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
               <td>{{ props.item.groupId }}</td>
               <td class="text-xs-left">{{ props.item.groupName }}</td>
               <td class="text-xs-left">{{ groupTypeItems.find(x=>x.value === props.item.groupType)? groupTypeItems.find(x=>x.value === props.item.groupType).text : props.item.groupType }}</td>
@@ -41,6 +41,8 @@
               <v-card>
                 <v-card-title>
                   <span class="headline">{{ formTitle }}</span>
+                  <v-spacer></v-spacer>
+                  <v-icon @click="close">close</v-icon>
                 </v-card-title>
 
                 <v-card-text>
@@ -135,6 +137,7 @@ export default {
     searchTargetItems: [{text: "그룹이름", value: "groupName"}, {text: "그룹종류", value: "groupType"}],
     noresult: "표시할 결과가 없습니다.",
     search: null,
+    touching: null,
     customFilter: function(items, search, filter) {
       const searchTarget = search && typeof search !== "boolean" ? search.toString().toLowerCase() : search;
       return this.$parent.searchTarget !== "groupType"
@@ -255,6 +258,14 @@ export default {
         }
       }
       this.close();
+    },
+    touchStart(item){
+      this.touching = item.boardId;
+    },
+    touchEnd(item){
+      if(this.touching === item.boardId){
+        this.editItem(item);
+      }
     }
   },
   layout: "main",

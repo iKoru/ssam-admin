@@ -43,6 +43,8 @@
               <v-card>
                 <v-card-title>
                   <span class="headline">동물명 생성</span>
+                  <v-spacer></v-spacer>
+                  <v-icon @click="close">close</v-icon>
                 </v-card-title>
 
                 <v-card-text>
