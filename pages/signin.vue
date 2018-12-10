@@ -17,7 +17,6 @@
                 </v-form>
               </v-card-text>
               <v-card-actions>
-                <v-spacer></v-spacer>
                 <v-btn block color="primary" @click="signin" :loading="loading">Sign in</v-btn>
               </v-card-actions>
             </v-card>
