@@ -210,14 +210,20 @@ export default {
   },
 
   created: async function() {
-    let groups = await this.$axios.get('/group');
-    if (groups.status === 200) {
-      this.groupItems = groups.data.map(x => {
-        return {text: x.groupName, value: x.groupId};
-      });
-    } else {
-      this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
+    let groups;
+    try{
+      groups = await this.$axios.get('/group');
+    }catch(err){
+      if(err.response){
+        this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
+      }else{
+        this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+      }
+      return;
     }
+    this.groupItems = groups.data.map(x => {
+      return {text: x.groupName, value: x.groupId};
+    });
   },
 
   mounted: function() {
@@ -245,11 +251,13 @@ export default {
       try {
         response = await this.$axios.get('/board/list', {params: query});
       } catch (err) {
-        if (err.response.status !== 200) {
-          this.loading = false;
+        this.loading = false;
+        if (err.response) {
           this.$router.app.$emit("showSnackbar", `게시판 리스트를 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ""}]`, "error");
-          return;
+        }else{
+          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
         }
+        return;
       }
       console.log(response);
       this.boards = response.data;
@@ -277,14 +285,16 @@ export default {
         try {
           response = await this.$axios.delete(`/board/${this.boards[index].boardId}`);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `게시판을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `게시판을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           this.loading = false;
           return;
         }
-        if (response.status === 200) {
-          this.$router.app.$emit("showSnackbar", `${this.boards[index].boardName} 게시판을 삭제하였습니다.`, "success");
-          this.boards.splice(index, 1);
-        }
+        this.$router.app.$emit("showSnackbar", `${this.boards[index].boardName} 게시판을 삭제하였습니다.`, "success");
+        this.boards.splice(index, 1);
         this.close();
         this.loading = false;
       }
@@ -317,7 +327,11 @@ export default {
         try {
           response = await this.$axios.put('/board', this.editedItem);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `게시판정보를 변경(예약)하지 못했습니다.[${err.response.data.message}]`, "error");
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `게시판정보를 변경(예약)하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
 
@@ -329,15 +343,17 @@ export default {
         try {
           response = await this.$axios.post('/board', this.editedItem);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `게시판을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `게시판을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
-        if (response.status === 200) {
-          this.editedItem.loungeNickName = response.data.nickName;
-          this.editedItem.topicNickName = response.data.nickName;
-          this.boards.push(this.editedItem);
-          this.$router.app.$emit("showSnackbar", `${this.editedItem.boardName} 게시판을 추가하였습니다.`, "success");
-        }
+        this.editedItem.loungeNickName = response.data.nickName;
+        this.editedItem.topicNickName = response.data.nickName;
+        this.boards.push(this.editedItem);
+        this.$router.app.$emit("showSnackbar", `${this.editedItem.boardName} 게시판을 추가하였습니다.`, "success");
       }
       this.close();
     },

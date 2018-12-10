@@ -13,7 +13,7 @@
                 <v-alert :value="true" type="error" v-show="message">{{message}}</v-alert>
                 <v-form>
                   <v-text-field append-icon="person" ref="userId" name="userId" label="userId" type="text" v-model="userId" @keyup.enter.native="signin"></v-text-field>
-                  <v-text-field append-icon="lock" ref="password" name="password" label="Password" id="password" type="password" v-model="password" @keyup.enter.native="signin"></v-text-field>
+                  <v-text-field append-icon="lock" ref="password" name="password" label="password" id="password" type="password" v-model="password" @keyup.enter.native="signin"></v-text-field>
                 </v-form>
               </v-card-text>
               <v-card-actions>
@@ -74,18 +74,22 @@ export default {
                 this.message = err.response.data.message;
                 console.log(err.response.data.target);
                 if (err.response.data.target && this.$refs[err.response.data.target]) {
-                  this.$refs[err.response.data.target].$el.focus();
+                  this.$refs[err.response.data.target].focus();
                 }
               });
           })
           .catch(err => {
             this.loading = false;
-            console.log(err.response);
-            localStorage.removeItem("accessToken");
-            this.message = err.response.data.message;
-            if (err.response.data.target && this.$refs[err.response.data.target]) {
-              this.$refs[err.response.data.target].$el.focus();
+            if(err.response){
+              console.log(err.response);
+              this.message = err.response.data.message;
+              if (err.response.data.target && this.$refs[err.response.data.target]) {
+                this.$refs[err.response.data.target].focus();
+              }
+            }else{
+              console.log(err);
             }
+            localStorage.removeItem("accessToken");
           });
       }
     }
@@ -127,16 +131,20 @@ export default {
                 this.message = err.response.data.message;
                 console.log(err.response.data.target);
                 if (err.response.data.target && this.$refs[err.response.data.target]) {
-                  this.$refs[err.response.data.target].$el.focus();
+                  this.$refs[err.response.data.target].focus();
                 }
               });
           })
           .catch(err => {
             this.loading = false;
-            console.log(err.response);
-            this.message = err.response.data.message;
-            if (err.response.data.target && this.$refs[err.response.data.target]) {
-              this.$refs[err.response.data.target].$el.focus();
+            if(err.response){
+              console.log(err.response);
+              this.message = err.response.data.message;
+              if (err.response.data.target && this.$refs[err.response.data.target]) {
+                this.$refs[err.response.data.target].focus();
+              }
+            }else{
+              this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
             }
           });
       }

@@ -209,31 +209,37 @@ export default {
   },
 
   created: async function() {
-    let groups = await this.$axios.get('/group');
-    if (groups.status === 200) {
-      this.majorItems = groups.data
-        .filter(x => x.groupType === "M")
-        .map(x => {
-          return {text: x.groupName, value: x.groupId};
-        });
-      this.gradeItems = groups.data
-        .filter(x => x.groupType === "G")
-        .map(x => {
-          return {text: x.groupName, value: x.groupId};
-        });
-      this.regionItems = groups.data
-        .filter(x => x.groupType === "R")
-        .map(x => {
-          return {text: x.groupName, value: x.groupId};
-        });
-      this.groupItems = groups.data
-        .filter(x => x.groupType === "N")
-        .map(x => {
-          return {text: x.groupName, value: x.groupId};
-        });
-    } else {
-      this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
+    let groups;
+    try{
+      groups = await this.$axios.get('/group');
+    }catch(err){
+      if(err.response){
+        this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
+      }else{
+        this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+      }
+      return;
     }
+    this.majorItems = groups.data
+      .filter(x => x.groupType === "M")
+      .map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
+    this.gradeItems = groups.data
+      .filter(x => x.groupType === "G")
+      .map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
+    this.regionItems = groups.data
+      .filter(x => x.groupType === "R")
+      .map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
+    this.groupItems = groups.data
+      .filter(x => x.groupType === "N")
+      .map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
   },
 
   mounted: function() {
@@ -262,11 +268,13 @@ export default {
       try {
         response = await this.$axios.get('/user/list', {params: query});
       } catch (err) {
-        if (err.response.status !== 200) {
-          this.loading = false;
+        this.loading = false;
+        if(err.response){
           this.$router.app.$emit("showSnackbar", `회원 리스트를 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ""}]`, "error");
-          return;
+        }else{
+          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
         }
+        return;
       }
       console.log(response);
       const majors = this.majorItems.map(z => z.value),
@@ -302,14 +310,16 @@ export default {
         try {
           response = await this.$axios.delete(`/user/${this.users[index].userId}`);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `회원을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
           this.loading = false;
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `회원을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
-        if (response.status === 200) {
-          this.$router.app.$emit("showSnackbar", `${this.users[index].userId} 회원을 삭제하였습니다.`, "success");
-          this.users.splice(index, 1);
-        }
+        this.$router.app.$emit("showSnackbar", `${this.users[index].userId} 회원을 삭제하였습니다.`, "success");
+        this.users.splice(index, 1);
         this.close();
         this.loading = false;
       }
@@ -330,7 +340,10 @@ export default {
         try {
           response = await this.$axios.put('/user', this.editedItem);
         } catch (err) {
-          if(!(err.response.status === 400 && err.response.data.message === '변경된 내용이 없습니다.')){
+          if(!err.response){
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+            return;
+          }else if(!(err.response.status === 400 && err.response.data.message === '변경된 내용이 없습니다.')){
             this.$router.app.$emit("showSnackbar", `회원정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
             return;
           }
@@ -339,7 +352,12 @@ export default {
         try{
           response = await this.$axios.put('/user/group', {userId:this.editedItem.userId, groups:this.editedItem.groups.concat(this.editedItem.major, this.editedItem.grade, this.editedItem.region)})
         } catch (err){
-          this.$router.app.$emit("showSnackbar", `회원 공통정보 수정완료 후 전공/지역/학년/그룹 정보를 수정하는 도중 오류가 발생했습니다.[${err.response.data.message}]`, 'error')
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `회원 공통정보 수정완료 후 전공/지역/학년/그룹 정보를 수정하는 도중 오류가 발생했습니다.[${err.response.data.message}]`, 'error')
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
+          return;
         }
         Object.assign(this.users[this.editedIndex], this.editedItem);
         this.$router.app.$emit("showSnackbar", `${this.users[this.editedIndex].userId} 회원 정보를 수정하였습니다.`, "success");
@@ -349,15 +367,17 @@ export default {
         try {
           response = await this.$axios.post('/user', this.editedItem);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `회원을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `회원을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
-        if (response.status === 200) {
-          this.editedItem.loungeNickName = response.data.nickName;
-          this.editedItem.topicNickName = response.data.nickName;
-          this.users.push(this.editedItem);
-          this.$router.app.$emit("showSnackbar", `${this.editedItem.userId} 회원을 추가하였습니다.`, "success");
-        }
+        this.editedItem.loungeNickName = response.data.nickName;
+        this.editedItem.topicNickName = response.data.nickName;
+        this.users.push(this.editedItem);
+        this.$router.app.$emit("showSnackbar", `${this.editedItem.userId} 회원을 추가하였습니다.`, "success");
       }
       this.close();
     },

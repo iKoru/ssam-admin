@@ -117,12 +117,19 @@ export default {
   methods: {
     getDataFromApi: async function() {
       this.loading = true;
-      let reportTypes = await this.$axios.get("/report/type");
-      if (reportTypes.status === 200) {
-        this.reportTypes = reportTypes.data;
-      } else {
-        this.$router.app.$emit("showSnackbar", `신고종류 리스트를 불러오지 못했습니다.[${reportTypes.data.message}]`, "error");
+      let reportTypes;
+      try{
+        reportTypes = await this.$axios.get("/report/type");
+      }catch(err){
+        this.loading = false;
+        if(err.response){
+          this.$router.app.$emit("showSnackbar", `신고종류 리스트를 불러오지 못했습니다.[${reportTypes.data.message}]`, "error");
+        }else{
+          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        }
+        return;
       }
+      this.reportTypes = reportTypes.data;
       this.loading = false;
     },
     editItem(item) {
@@ -143,14 +150,16 @@ export default {
         try {
           response = await this.$axios.delete(`/report/type/${this.reportTypes[index].reportTypeId}`);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `신고종류을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
           this.loading = false;
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `신고종류을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
-        if (response.status === 200) {
-          this.$router.app.$emit("showSnackbar", `${this.reportTypes[index].reportTypeName} 신고종류을 삭제하였습니다.`, "success");
-          this.reportTypes.splice(index, 1);
-        }
+        this.$router.app.$emit("showSnackbar", `${this.reportTypes[index].reportTypeName} 신고종류을 삭제하였습니다.`, "success");
+        this.reportTypes.splice(index, 1);
         this.close();
         this.loading = false;
       }
@@ -171,7 +180,11 @@ export default {
         try {
           response = await this.$axios.put("/report/type", this.editedItem);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `신고종류정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `신고종류정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
 
@@ -183,14 +196,16 @@ export default {
         try {
           response = await this.$axios.post("/report/type", this.editedItem);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `신고종류을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `신고종류을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
-        if (response.status === 200) {
-          this.editedItem.reportTypeId = response.data.reportTypeId;
-          this.reportTypes.push(this.editedItem);
-          this.$router.app.$emit("showSnackbar", `${this.editedItem.reportTypeName} 신고종류을 추가하였습니다.`, "success");
-        }
+        this.editedItem.reportTypeId = response.data.reportTypeId;
+        this.reportTypes.push(this.editedItem);
+        this.$router.app.$emit("showSnackbar", `${this.editedItem.reportTypeName} 신고종류을 추가하였습니다.`, "success");
       }
       this.close();
     },

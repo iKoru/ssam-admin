@@ -179,15 +179,22 @@ export default {
   methods: {
     getDataFromApi: async function() {
       this.loading = true;
-      let groups = await this.$axios.get("/group");
-      if (groups.status === 200) {
-        this.groupItems = groups.data.map(x => {
-          return {text: x.groupName, value: x.groupId};
-        });
-        this.groups = groups.data;
-      } else {
-        this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
+      let groups;
+      try{
+        groups = await this.$axios.get("/group");
+      }catch(err){
+        this.loading = false;
+        if(err.response){
+          this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
+        }else{
+          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        }
+        return;
       }
+      this.groupItems = groups.data.map(x => {
+        return {text: x.groupName, value: x.groupId};
+      });
+      this.groups = groups.data;
       this.loading = false;
     },
     editItem(item) {
@@ -208,14 +215,16 @@ export default {
         try {
           response = await this.$axios.delete(`/group/${this.groups[index].groupId}`);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `그룹을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
           this.loading = false;
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `그룹을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
-        if (response.status === 200) {
-          this.$router.app.$emit("showSnackbar", `${this.groups[index].groupName} 그룹을 삭제하였습니다.`, "success");
-          this.groups.splice(index, 1);
-        }
+        this.$router.app.$emit("showSnackbar", `${this.groups[index].groupName} 그룹을 삭제하였습니다.`, "success");
+        this.groups.splice(index, 1);
         this.close();
         this.loading = false;
       }
@@ -236,7 +245,11 @@ export default {
         try {
           response = await this.$axios.put("/group", this.editedItem);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `그룹정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `그룹정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
 
@@ -248,14 +261,16 @@ export default {
         try {
           response = await this.$axios.post("/group", this.editedItem);
         } catch (err) {
-          this.$router.app.$emit("showSnackbar", `그룹을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+          if(err.response){
+            this.$router.app.$emit("showSnackbar", `그룹을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
+          }else{
+            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          }
           return;
         }
-        if (response.status === 200) {
-          this.editedItem.groupId = response.data.groupId;
-          this.groups.push(this.editedItem);
-          this.$router.app.$emit("showSnackbar", `${this.editedItem.groupName} 그룹을 추가하였습니다.`, "success");
-        }
+        this.editedItem.groupId = response.data.groupId;
+        this.groups.push(this.editedItem);
+        this.$router.app.$emit("showSnackbar", `${this.editedItem.groupName} 그룹을 추가하였습니다.`, "success");
       }
       this.close();
     },

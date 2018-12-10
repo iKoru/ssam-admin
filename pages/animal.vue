@@ -114,23 +114,30 @@ export default {
   methods: {
     getDataFromApi: async function() {
       this.loading = true;
-      let animals = await this.$axios.get("/comment/animal");
-      if (animals.status === 200) {
-        this.animals = animals.data.map(x => {
-          return {
-            animalName: x
-          };
-        });
-        console.log(this.animals);
-      } else {
-        this.$router.app.$emit("showSnackbar", `동물명 리스트를 불러오지 못했습니다.[${animals.data.message}]`, "error");
+      let animals;
+      try{
+        animals = await this.$axios.get("/comment/animal");
+      }catch(err){
+        if(err.response){
+          this.$router.app.$emit("showSnackbar", `동물명 리스트를 불러오지 못했습니다.[${err.response.data.message}]`, "error");
+        }else{
+          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        }
+        this.loading = false;
+        return;
       }
+      this.animals = animals.data.map(x => {
+        return {
+          animalName: x
+        };
+      });
+      console.log(this.animals);
       this.loading = false;
     },
 
     deleteItem: async function(item) {
       if (this.selected.length === 0) {
-        alert("선택된 동물명이 없습니다. 확인 후 다시 시도해주세요.");
+        this.$router.app.$emit('showSnackbar', '선택된 동물명이 없습니다. 확인 후 다시 시도해주세요.', 'error');
         return;
       }
       if (confirm(`정말 동물명 ${this.selected.length}개를 삭제하시겠습니까? 삭제된 동물명을 사용하고 있는 사람들의 동물명은 유지됩니다.`)) {
@@ -143,6 +150,8 @@ export default {
             response = await this.$axios.delete("/comment/animal/" + this.selected[i].animalName);
           } catch (err) {
             this.$router.app.$emit("showSnackbar", `${this.selected[i].animalName} 동물명을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
+            i++;
+            continue;
           }
           if (response.status === 200) {
             success.push(this.selected[i].animalName);
