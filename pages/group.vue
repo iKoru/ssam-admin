@@ -225,6 +225,7 @@ export default {
         }
         this.$router.app.$emit("showSnackbar", `${this.groups[index].groupName} 그룹을 삭제하였습니다.`, "success");
         this.groups.splice(index, 1);
+        this.groupItems.splice(this.groupItems.findIndex(x=>x.value === item.groupId), 1);
         this.close();
         this.loading = false;
       }
@@ -254,6 +255,7 @@ export default {
         }
 
         Object.assign(this.groups[this.editedIndex], this.editedItem);
+        this.groupItems[this.groupItems.findIndex(x=>x.value === this.editedItem.groupId)].text = this.editedItem.groupName;
         this.$router.app.$emit("showSnackbar", `${this.groups[this.editedIndex].groupName} 그룹 정보를 수정하였습니다.`, "success");
       } else {
         //create
@@ -270,6 +272,7 @@ export default {
         }
         this.editedItem.groupId = response.data.groupId;
         this.groups.push(this.editedItem);
+        this.groupItems.push({text:this.editedItem.groupName, value:this.editedItem.groupId});
         this.$router.app.$emit("showSnackbar", `${this.editedItem.groupName} 그룹을 추가하였습니다.`, "success");
       }
       this.close();
