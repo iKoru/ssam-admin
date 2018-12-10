@@ -19,6 +19,12 @@ const Menu = [
     icon: 'group',
     name: 'group',
   },
+  {
+    title: '회원 제재 관리',
+    group: 'user',
+    icon: 'warning',
+    name: 'declare',
+  },
   { header: '게시판' },
   {
     title: '게시판 관리',
@@ -49,7 +55,14 @@ const Menu = [
     group: 'board',
     icon: 'style',
     name: 'animal'
-  }
+  },
+  { header: '기타' },
+  {
+    title: '회원 알림 관리',
+    group: 'etc',
+    icon: 'notifications_active',
+    name: 'notification'
+  },
 ];
 // reorder menu
 Menu.forEach((item) => {
