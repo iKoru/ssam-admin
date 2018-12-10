@@ -2,10 +2,9 @@
   <div id="appRoot">
     <v-app id="inspire" class="app">
       <app-drawer class="app--drawer" ref="appDrawer"></app-drawer>
-      <app-toolbar class="app--toolbar" @APP_DRAWER_TOGGLED="drawerToggled"></app-toolbar>
+      <app-toolbar class="app--toolbar" @APP_DRAWER_TOGGLED="drawerToggled" :nick-name="nickName"></app-toolbar>
       <v-content>
         <!-- Page Header -->
-        <page-header v-if="$route.meta.breadcrumb"></page-header>
         <div class="page-wrapper">
           <nuxt></nuxt>
         </div>
@@ -32,14 +31,12 @@
 import AppDrawer from "~/components/AppDrawer";
 import AppToolbar from "~/components/AppToolbar";
 import AppFab from "~/components/AppFab";
-import PageHeader from "~/components/PageHeader";
 import AppEvents from "~/assets/js/event";
 export default {
   components: {
     AppDrawer,
     AppToolbar,
-    AppFab,
-    PageHeader
+    AppFab
   },
   data: () => ({
     expanded: true,
@@ -49,7 +46,8 @@ export default {
       color: ""
     },
     isShowingSnackbar: false,
-    waiting: []
+    waiting: [],
+    nickName: null
   }),
 
   computed: {},
@@ -79,12 +77,23 @@ export default {
       }
     }
   },
-  created() {
+  created: async function() {
     AppEvents.forEach(item => {
       this.$on(item.name, item.callback);
     });
     this.$router.app.$on("showSnackbar", this.showSnackbar);
-    // window.getApp = this;
+    let response;
+    try{
+      response = await this.$axios.get('/user', {params:{userId:this.$store.getters.userId}});
+    }catch(err){
+      if(err.response){
+        this.showSnackbar(`서버로부터 프로필 정보를 가져오지 못했습니다.[${err.response.data.message}]`, 'error')
+      }else{
+        this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+      }
+      return;
+    }
+    this.nickName = response.data.loungeNickName;
   },
   middleware: "requireAuth"
 };

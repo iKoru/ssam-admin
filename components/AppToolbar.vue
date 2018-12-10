@@ -4,8 +4,9 @@
     <v-toolbar-title class="ml-0 pl-3">pedagy admin</v-toolbar-title>
     <!--<v-text-field flat solo-inverted prepend-icon="search" label="Search" class="hidden-sm-and-down"></v-text-field>-->
     <v-spacer></v-spacer>
+    <span>{{nickName || ''}}님 로그인</span>
     <v-btn @click="signout">로그아웃</v-btn>
-    <v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
+    <!--<v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
       <v-btn icon large flat slot="activator">
         <v-avatar size="30px">
           <img src="~static/img/avatar/man_4.jpg" alt="Michael Wang">
@@ -21,16 +22,17 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
-    </v-menu>
+    </v-menu>-->
   </v-toolbar>
 </template>
 <script>
-import Util from "~/assets/js/util";
+
 export default {
   name: "app-toolbar",
   components: {},
+  props:['nickName'],
   data: () => ({
-    items: [
+    /*items: [
       {
         icon: "account_circle",
         href: "#",
@@ -55,7 +57,7 @@ export default {
           this.$emit("APP_LOGOUT");
         }
       }
-    ]
+    ]*/
   }),
   computed: {
     toolbarColor() {
