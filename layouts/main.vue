@@ -13,7 +13,7 @@
       <!-- Go to top -->
       <app-fab></app-fab>
       <!-- theme setting -->
-      <v-footer height="auto" class="white pa-3 app--footer">
+      <v-footer height="auto" class="white pa-3 app--footer" fixed>
         <span class="caption">pedagy &copy; {{ new Date().getFullYear() }}</span>
         <v-spacer></v-spacer>
         <span class="caption mr-1">Make With Love</span>
