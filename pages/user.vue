@@ -383,6 +383,7 @@ export default {
     },
     removeChip(props, item) {
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
+      this.editedItem.groups.splice(this.editedItem.groups.indexOf(item.value), 1);
     },
     touchStart(item){
       this.touching = item.boardId;
