@@ -1,5 +1,5 @@
 <template>
-  <div id="pageDashboard">
+  <div id="pageUserDocument">
     <v-container grid-list-xl fluid>
       <v-layout row wrap class="elevation-1" white>
         <v-tabs color="secondary" dark icons-and-text id="userDocumentTabs" v-model="selectedTab">
@@ -103,7 +103,7 @@ export default {
     boardItems: [],
     searchQuery: null,
     noresult: "표시할 결과가 없습니다.",
-    selectedTab: "#userDocument",
+    selectedTab: "userDocument",
     mainServerHost: config.mainServerHost
   }),
 
