@@ -31,6 +31,8 @@
 <script>
 /* global localStorage */
 import config from "~/assets/js/config";
+import jwt from 'jwt-decode';
+
 export default {
   layout: "public",
   data: () => ({
@@ -65,16 +67,22 @@ export default {
                 localStorage.setItem("accessToken", response.data.token);
                 this.$axios.defaults.headers.common["x-auth"] = response.data.token;
                 this.$store.dispatch("signin", {
-                  accessToken: response.data.token
+                  accessToken: response.data.token,
+                  userId:jwt(response.data.token).userId
                 });
                 this.$router.push("/");
               })
               .catch(err => {
                 this.loading = false;
-                this.message = err.response.data.message;
-                console.log(err.response.data.target);
-                if (err.response.data.target && this.$refs[err.response.data.target]) {
-                  this.$refs[err.response.data.target].focus();
+                if(err.response){
+                  this.message = err.response.data.message;
+                  console.log(err.response.data.target);
+                  if (err.response.data.target && this.$refs[err.response.data.target]) {
+                    this.$refs[err.response.data.target].focus();
+                  }
+                }else{
+                  console.log(err);
+                  this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
                 }
               });
           })
@@ -111,7 +119,6 @@ export default {
             password: this.password
           })
           .then(response => {
-            console.log(response);
             this.$axios({
               url: "/check",
               method: "GET",
@@ -122,16 +129,21 @@ export default {
                 localStorage.setItem("accessToken", response.data.token);
                 this.$axios.defaults.headers.common["x-auth"] = response.data.token;
                 this.$store.dispatch("signin", {
-                  accessToken: response.data.token
+                  accessToken: response.data.token,
+                  userId:jwt(response.data.token).userId
                 });
                 this.$router.push("/");
               })
               .catch(err => {
                 this.loading = false;
                 this.message = err.response.data.message;
-                console.log(err.response.data.target);
-                if (err.response.data.target && this.$refs[err.response.data.target]) {
-                  this.$refs[err.response.data.target].focus();
+                if(err.response){
+                  console.log(err.response.data.target);
+                  if (err.response.data.target && this.$refs[err.response.data.target]) {
+                    this.$refs[err.response.data.target].focus();
+                  }
+                }else{
+                  this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
                 }
               });
           })
