@@ -23,7 +23,7 @@ const Menu = [
     title: '회원 제재 관리',
     group: 'user',
     icon: 'warning',
-    name: 'declare',
+    name: 'sanction',
   },
   { header: '게시판' },
   {
