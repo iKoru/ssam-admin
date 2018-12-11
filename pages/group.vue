@@ -180,14 +180,14 @@ export default {
     getDataFromApi: async function() {
       this.loading = true;
       let groups;
-      try{
+      try {
         groups = await this.$axios.get("/group");
-      }catch(err){
+      } catch (err) {
         this.loading = false;
-        if(err.response){
+        if (err.response) {
           this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
-        }else{
-          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        } else {
+          this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
         }
         return;
       }
@@ -216,16 +216,16 @@ export default {
           response = await this.$axios.delete(`/group/${this.groups[index].groupId}`);
         } catch (err) {
           this.loading = false;
-          if(err.response){
+          if (err.response) {
             this.$router.app.$emit("showSnackbar", `그룹을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           return;
         }
         this.$router.app.$emit("showSnackbar", `${this.groups[index].groupName} 그룹을 삭제하였습니다.`, "success");
         this.groups.splice(index, 1);
-        this.groupItems.splice(this.groupItems.findIndex(x=>x.value === item.groupId), 1);
+        this.groupItems.splice(this.groupItems.findIndex(x => x.value === item.groupId), 1);
         this.close();
         this.loading = false;
       }
@@ -243,19 +243,22 @@ export default {
       if (this.editedIndex > -1) {
         //update
         let response;
+        if (this.editedItem.parentGroupId === undefined) {
+          this.editedItem.parentGroupId = null;
+        }
         try {
           response = await this.$axios.put("/group", this.editedItem);
         } catch (err) {
-          if(err.response){
+          if (err.response) {
             this.$router.app.$emit("showSnackbar", `그룹정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           return;
         }
 
         Object.assign(this.groups[this.editedIndex], this.editedItem);
-        this.groupItems[this.groupItems.findIndex(x=>x.value === this.editedItem.groupId)].text = this.editedItem.groupName;
+        this.groupItems[this.groupItems.findIndex(x => x.value === this.editedItem.groupId)].text = this.editedItem.groupName;
         this.$router.app.$emit("showSnackbar", `${this.groups[this.editedIndex].groupName} 그룹 정보를 수정하였습니다.`, "success");
       } else {
         //create
@@ -263,25 +266,25 @@ export default {
         try {
           response = await this.$axios.post("/group", this.editedItem);
         } catch (err) {
-          if(err.response){
+          if (err.response) {
             this.$router.app.$emit("showSnackbar", `그룹을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           return;
         }
         this.editedItem.groupId = response.data.groupId;
         this.groups.push(this.editedItem);
-        this.groupItems.push({text:this.editedItem.groupName, value:this.editedItem.groupId});
+        this.groupItems.push({text: this.editedItem.groupName, value: this.editedItem.groupId});
         this.$router.app.$emit("showSnackbar", `${this.editedItem.groupName} 그룹을 추가하였습니다.`, "success");
       }
       this.close();
     },
-    touchStart(item){
+    touchStart(item) {
       this.touching = item.boardId;
     },
-    touchEnd(item){
-      if(this.touching === item.boardId){
+    touchEnd(item) {
+      if (this.touching === item.boardId) {
         this.editItem(item);
       }
     }

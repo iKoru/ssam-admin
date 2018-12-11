@@ -77,7 +77,7 @@
                       <v-flex xs12>
                         <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
                           <template slot="selection" slot-scope="props">
-                            <v-chip close :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item)">{{props.item.text}}</v-chip>
+                            <v-chip close :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, editedItem.allowedGroups)">{{props.item.text}}</v-chip>
                           </template>
                         </v-autocomplete>
                       </v-flex>
@@ -146,7 +146,6 @@
 </template>
 
 <script>
-
 export default {
   data: () => ({
     dialog: false,
@@ -165,7 +164,7 @@ export default {
       boardType: null,
       allGroupAuth: "NORMAL",
       boardDescription: "",
-      categories:[],
+      categories: [],
       reservedDate: null,
       reservedContents: null,
       password: undefined,
@@ -182,7 +181,7 @@ export default {
       boardType: null,
       allGroupAuth: "NORMAL",
       boardDescription: "",
-      categories:[],
+      categories: [],
       reservedDate: null,
       reservedContents: null,
       password: undefined,
@@ -191,7 +190,7 @@ export default {
     },
     loading: true,
     pagination: {},
-    searchTargetItems: [{text:'게시판ID', value:'boardId'}, {text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}],
+    searchTargetItems: [{text: "게시판ID", value: "boardId"}, {text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}],
     boardStatusItems: [{text: "정상", value: "NORMAL"}, {text: "삭제처리", value: "DELETED"}],
     allGroupAuthItems: [{text: "비공개", value: "NONE"}, {text: "읽기전용", value: "READONLY"}],
     boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "E"}],
@@ -225,13 +224,13 @@ export default {
 
   created: async function() {
     let groups;
-    try{
-      groups = await this.$axios.get('/group');
-    }catch(err){
-      if(err.response){
+    try {
+      groups = await this.$axios.get("/group");
+    } catch (err) {
+      if (err.response) {
         this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
-      }else{
-        this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+      } else {
+        this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
       }
       return;
     }
@@ -256,28 +255,28 @@ export default {
         query.isAscending = !descending;
       }
       if (this.searchTarget !== "boardType" && this.searchQuery) {
-        query.searchTarget = this.searchTarget
+        query.searchTarget = this.searchTarget;
         query.searchQuery = this.searchQuery;
       } else if (this.searchTarget === "boardType") {
         query[this.searchTarget] = this.searchType;
       }
       let response;
       try {
-        response = await this.$axios.get('/board/list', {params: query});
+        response = await this.$axios.get("/board/list", {params: query});
       } catch (err) {
         this.loading = false;
         if (err.response) {
           this.$router.app.$emit("showSnackbar", `게시판 리스트를 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ""}]`, "error");
-        }else{
-          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        } else {
+          this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
         }
         return;
       }
       console.log(response);
       this.boards = response.data;
-      this.boards.forEach(x=>{
-        x.categories = x.categories.filter(y=>y !== null);
-      })
+      this.boards.forEach(x => {
+        x.categories = x.categories.filter(y => y !== null);
+      });
       this.totalBoards = response.data.length;
       this.loading = false;
     },
@@ -302,10 +301,10 @@ export default {
         try {
           response = await this.$axios.delete(`/board/${this.boards[index].boardId}`);
         } catch (err) {
-          if(err.response){
+          if (err.response) {
             this.$router.app.$emit("showSnackbar", `게시판을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           this.loading = false;
           return;
@@ -343,12 +342,12 @@ export default {
         this.addCategoryChips(this.candidate);
         let response;
         try {
-          response = await this.$axios.put('/board', this.editedItem);
+          response = await this.$axios.put("/board", this.editedItem);
         } catch (err) {
-          if(err.response){
+          if (err.response) {
             this.$router.app.$emit("showSnackbar", `게시판정보를 변경(예약)하지 못했습니다.[${err.response.data.message}]`, "error");
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           return;
         }
@@ -359,12 +358,12 @@ export default {
         //create
         let response;
         try {
-          response = await this.$axios.post('/board', this.editedItem);
+          response = await this.$axios.post("/board", this.editedItem);
         } catch (err) {
-          if(err.response){
+          if (err.response) {
             this.$router.app.$emit("showSnackbar", `게시판을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           return;
         }
@@ -375,14 +374,15 @@ export default {
       }
       this.close();
     },
-    removeChip(props, item) {
+    removeChip(props, item, list) {
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
+      list.splice(list.indexOf(item.value), 1);
     },
-    touchStart(item){
+    touchStart(item) {
       this.touching = item.boardId;
     },
-    touchEnd(item){
-      if(this.touching === item.boardId){
+    touchEnd(item) {
+      if (this.touching === item.boardId) {
         this.editItem(item);
       }
     },

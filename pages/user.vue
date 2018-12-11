@@ -158,7 +158,7 @@ export default {
       region: null,
       memo: "",
       email: "",
-      password: undefined,
+      password: null,
     },
     defaultItem: {
       userId: "",
@@ -172,7 +172,7 @@ export default {
       region: null,
       memo: "",
       email: "",
-      password: undefined
+      password: null
     },
     loading: true,
     pagination: {},
