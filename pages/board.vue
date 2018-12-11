@@ -72,7 +72,7 @@
                         <v-checkbox name="allowAnonymous" v-model="editedItem.allowAnonymous" label="익명글 허용 여부"></v-checkbox>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-select name="allGroupAuth" v-model="editedItem.allGroupAuth" :items="allGroupAuthItems" label="전체 접근허용 구분"></v-select>
+                        <v-select name="allGroupAuth" v-model="editedItem.allGroupAuth" :items="allGroupAuthItems" label="베스트 노출구분"></v-select>
                       </v-flex>
                       <v-flex xs12>
                         <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
@@ -83,6 +83,17 @@
                       </v-flex>
                       <v-flex xs12>
                         <v-textarea name="boardDescription" v-model="editedItem.boardDescription" label="게시판 설명" placeholder="게시판 설명" hint="게시판 페이지 제목에 표시되는 문구"></v-textarea>
+                      </v-flex>
+                      <v-flex xs12>
+                        <v-text-field name="category" label="추가할 카테고리 입력" placeholder="여러개 동시 입력은 컴마로 구분합니다." hint="입력 후 엔터를 입력하면 연속으로 입력할 수 있습니다. 카테고리 변경은 항상 즉시반영됩니다." v-model="candidate" @keyup.enter="addCategoryChips(candidate)" clearable></v-text-field>
+                      </v-flex>
+                      <v-flex xs12>
+                        <span>입력된 카테고리</span>
+                        <br>
+                        <template v-if="editedItem.categories.length > 0">
+                          <v-chip close v-if="category" v-for="category in editedItem.categories" :key="category" @input="removeCategoryChip(category)">{{category}}</v-chip>
+                        </template>
+                        <p v-else class="text-xs-center">아직 입력된 카테고리가 없습니다.</p>
                       </v-flex>
                       <template v-if="formTitle !== '게시판 생성'">
                         <v-flex xs12 sm6>
@@ -154,6 +165,7 @@ export default {
       boardType: null,
       allGroupAuth: "NORMAL",
       boardDescription: "",
+      categories:[],
       reservedDate: null,
       reservedContents: null,
       password: undefined,
@@ -170,6 +182,7 @@ export default {
       boardType: null,
       allGroupAuth: "NORMAL",
       boardDescription: "",
+      categories:[],
       reservedDate: null,
       reservedContents: null,
       password: undefined,
@@ -188,6 +201,7 @@ export default {
     searchStatus: null,
     searchType: null,
     touching: null,
+    candidate: null,
     noresult: "표시할 결과가 없습니다."
   }),
 
@@ -261,6 +275,9 @@ export default {
       }
       console.log(response);
       this.boards = response.data;
+      this.boards.forEach(x=>{
+        x.categories = x.categories.filter(y=>y !== null);
+      })
       this.totalBoards = response.data.length;
       this.loading = false;
     },
@@ -323,6 +340,7 @@ export default {
           }
         }
 
+        this.addCategoryChips(this.candidate);
         let response;
         try {
           response = await this.$axios.put('/board', this.editedItem);
@@ -367,6 +385,23 @@ export default {
       if(this.touching === item.boardId){
         this.editItem(item);
       }
+    },
+    addCategoryChips(candidate) {
+      if (typeof candidate === "string") {
+        candidate.split(",").forEach(x => {
+          if (x !== "") {
+            if (this.editedItem.categories.indexOf(x) >= 0) {
+              this.$router.app.$emit("showSnackbar", `${x} : 이미 (임시로) 입력된 카테고리입니다.`, "error");
+              return;
+            }
+            this.editedItem.categories.push(x);
+          }
+        });
+        this.candidate = null;
+      }
+    },
+    removeCategoryChip(item) {
+      this.editedItem.categories.splice(this.editedItem.categories.indexOf(item), 1);
     }
   },
   layout: "main",
