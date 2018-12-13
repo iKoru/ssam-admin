@@ -18,7 +18,7 @@
         <span class="caption mr-1">Make With Love</span>
         <v-icon color="pink" small>favorite</v-icon>
       </v-footer>
-      <v-snackbar :timeout="5000" bottom left :color="snackbar.color" v-model="isShowingSnackbar">
+      <v-snackbar :timeout="snackbar.color === 'success'?3000:5000" bottom left :color="snackbar.color" v-model="isShowingSnackbar">
         {{ snackbar.text }}
         <v-btn dark flat @click.native="isShowingSnackbar = false" icon>
           <v-icon>close</v-icon>
