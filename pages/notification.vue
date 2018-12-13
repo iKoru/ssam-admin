@@ -21,16 +21,16 @@
                   <v-text-field name="template" v-model="editedItem.template" label="알림 템플릿" paceholder="알림 내용을 입력합니다." hint="$1, $2, $3, $4로 아래 변수들을 넣을 수 있습니다."></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6>
-                  <v-text-field name="variable1" v-model="editedItem.variable1" label="변수1"></v-text-field>
+                  <v-text-field name="variable1" v-model="editedItem.variable1" label="변수1" hint="템플릿의 $1과 대체됩니다."></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6>
-                  <v-text-field name="variable2" v-model="editedItem.variable2" label="변수2"></v-text-field>
+                  <v-text-field name="variable2" v-model="editedItem.variable2" label="변수2" hint="템플릿의 $2와 대체됩니다."></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6>
-                  <v-text-field name="variable3" v-model="editedItem.variable3" label="변수3"></v-text-field>
+                  <v-text-field name="variable3" v-model="editedItem.variable3" label="변수3" hint="템플릿의 $3과 대체됩니다."></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6>
-                  <v-text-field name="variable4" v-model="editedItem.variable4" label="변수4"></v-text-field>
+                  <v-text-field name="variable4" v-model="editedItem.variable4" label="변수4" hint="템플릿의 $4와 대체됩니다."></v-text-field>
                 </v-flex>
                 <v-flex xs12>
                   <v-text-field name="href" v-model="editedItem.href" label="링크" hint="클릭 시 이동할 주소"></v-text-field>
