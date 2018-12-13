@@ -1,7 +1,7 @@
 <template>
   <div id="pageReport">
     <v-container grid-list-xl fluid>
-      <v-layout row wrap class="elevation-1" white>
+      <v-layout row wrap class="elevation-1 mb-5" white>
         <v-tabs color="secondary" dark icons-and-text id="reportTabs" v-model="selectedTab">
           <v-tabs-slider color="accent"></v-tabs-slider>
           <v-tab href="#documentReport">게시물

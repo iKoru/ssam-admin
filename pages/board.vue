@@ -1,7 +1,7 @@
 <template>
   <div id="pageBoard">
     <v-container grid-list-xl fluid>
-      <v-layout row wrap class="elevation-1" white>
+      <v-layout row wrap class="elevation-1 mb-5" white>
         <v-toolbar flat color="white">
           <v-toolbar-title>게시판 관리</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -272,7 +272,7 @@ export default {
         }
         return;
       }
-      console.log(response);
+      
       this.boards = response.data;
       this.boards.forEach(x => {
         x.categories = x.categories.filter(y => y !== null);

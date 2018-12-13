@@ -1,7 +1,7 @@
 <template>
   <div id="pageReportType">
     <v-container grid-list-xl fluid>
-      <v-layout row wrap class="elevation-1" white>
+      <v-layout row wrap class="elevation-1 mb-5" white>
         <v-toolbar flat color="white">
           <v-toolbar-title>신고종류 관리</v-toolbar-title>
           <v-spacer></v-spacer>

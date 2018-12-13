@@ -226,7 +226,7 @@ export default {
         }
         return;
       }
-      console.log(response);
+      
       this.sanctions = response.data
       this.totalSanctions = response.data.length;
       this.loading = false;

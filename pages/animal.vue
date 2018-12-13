@@ -1,7 +1,7 @@
 <template>
   <div id="pageAnimal">
     <v-container grid-list-xl fluid>
-      <v-layout row wrap class="elevation-1" white>
+      <v-layout row wrap class="elevation-1 mb-5" white>
         <v-toolbar flat color="white">
           <v-toolbar-title>동물명 관리</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -131,7 +131,7 @@ export default {
           animalName: x
         };
       });
-      console.log(this.animals);
+      
       this.loading = false;
     },
 

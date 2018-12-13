@@ -1,7 +1,7 @@
 <template>
   <div id="pageUserDocument">
     <v-container grid-list-xl fluid>
-      <v-layout row wrap class="elevation-1" white>
+      <v-layout row wrap class="elevation-1 mb-5" white>
         <v-tabs color="secondary" dark icons-and-text id="userDocumentTabs" v-model="selectedTab">
           <v-tabs-slider color="accent"></v-tabs-slider>
           <v-tab href="#userDocument">게시물

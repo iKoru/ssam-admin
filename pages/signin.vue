@@ -40,9 +40,6 @@ export default {
     userId: process.browser ? localStorage.getItem("userId") || "" : "",
     password: ""
   }),
-  meta: {
-    public: true
-  },
   created() {
     this.$axios.defaults.baseURL = config.apiServerHost;
     if (process.browser) {
@@ -55,7 +52,6 @@ export default {
           headers: {"x-auth": token}
         })
           .then(response => {
-            console.log(response);
             this.$axios({
               url: "/check",
               method: "GET",
@@ -75,12 +71,10 @@ export default {
                 this.loading = false;
                 if(err.response){
                   this.message = err.response.data.message;
-                  console.log(err.response.data.target);
                   if (err.response.data.target && this.$refs[err.response.data.target]) {
                     this.$refs[err.response.data.target].focus();
                   }
                 }else{
-                  console.log(err);
                   this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
                 }
               });
@@ -88,13 +82,12 @@ export default {
           .catch(err => {
             this.loading = false;
             if(err.response){
-              console.log(err.response);
               this.message = err.response.data.message;
               if (err.response.data.target && this.$refs[err.response.data.target]) {
                 this.$refs[err.response.data.target].focus();
               }
             }else{
-              console.log(err);
+              this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
             }
             localStorage.removeItem("accessToken");
           });
@@ -137,7 +130,6 @@ export default {
                 this.loading = false;
                 this.message = err.response.data.message;
                 if(err.response){
-                  console.log(err.response.data.target);
                   if (err.response.data.target && this.$refs[err.response.data.target]) {
                     this.$refs[err.response.data.target].focus();
                   }
@@ -149,7 +141,6 @@ export default {
           .catch(err => {
             this.loading = false;
             if(err.response){
-              console.log(err.response);
               this.message = err.response.data.message;
               if (err.response.data.target && this.$refs[err.response.data.target]) {
                 this.$refs[err.response.data.target].focus();

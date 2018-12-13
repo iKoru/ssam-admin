@@ -1,7 +1,7 @@
 <template>
   <div id="pageUser">
     <v-container grid-list-xl fluid>
-      <v-layout row wrap class="elevation-1" white>
+      <v-layout row wrap class="elevation-1 mb-5" white>
         <v-toolbar flat color="white">
           <v-toolbar-title>회원 관리</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -276,7 +276,7 @@ export default {
         }
         return;
       }
-      console.log(response);
+      
       const majors = this.majorItems.map(z => z.value),
         regions = this.regionItems.map(z => z.value),
         grades = this.gradeItems.map(z => z.value),
