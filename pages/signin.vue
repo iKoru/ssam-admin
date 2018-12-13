@@ -69,7 +69,7 @@ export default {
                   accessToken: response.data.token,
                   userId:jwt(response.data.token).userId
                 });
-                this.$router.push("/");
+                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || '/');
               })
               .catch(err => {
                 this.loading = false;
@@ -131,7 +131,7 @@ export default {
                   accessToken: response.data.token,
                   userId:jwt(response.data.token).userId
                 });
-                this.$router.push("/");
+                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || '/');
               })
               .catch(err => {
                 this.loading = false;
