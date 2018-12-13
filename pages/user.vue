@@ -1,5 +1,5 @@
 <template>
-  <div id="pageDashboard">
+  <div id="pageUser">
     <v-container grid-list-xl fluid>
       <v-layout row wrap class="elevation-1" white>
         <v-toolbar flat color="white">

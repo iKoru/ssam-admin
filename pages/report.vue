@@ -258,17 +258,31 @@ export default {
   },
   
   created: async function() {
-    let reportType = await this.$axios.get("/report/type");
-    if (reportType.status === 200) {
+    /*let reportType;
+    try{
+      reportType = await this.$axios.get("/report/type");
+    }catch(err){
+      this.$router.app.$emit("showSnackbar", `신고종류 리스트를 불러오지 못했습니다.[${err.response.data.message}]`, "error");
+      return;
+    }
+    this.reportTypeItems = reportType.data.map(x => {
+      return {text: x.reportTypeName, value: x.reportTypeId};
+    });*/
+  },
+
+  mounted : async function(){
+    if(this.reportTypeItems.length === 0){
+      let reportType;
+      try{
+        reportType = await this.$axios.get("/report/type");
+      }catch(err){
+        this.$router.app.$emit("showSnackbar", `신고종류 리스트를 불러오지 못했습니다.[${err.response.data.message}]`, "error");
+        return;
+      }
       this.reportTypeItems = reportType.data.map(x => {
         return {text: x.reportTypeName, value: x.reportTypeId};
       });
-    } else {
-      this.$router.app.$emit("showSnackbar", `신고종류 리스트를 불러오지 못했습니다.[${reportType.data.message}]`, "error");
     }
-  },
-
-  mounted(){
     this.getDataFromApi();
   },
   
@@ -393,7 +407,7 @@ export default {
         }else{
           response.documentId = this.editedItem.documentId;
         }
-        response = await this.$axios.post('/sanction', this.editedItem);
+        response = await this.$axios.post('/sanction', response);
       } catch (err) {
         if(err.response){
           this.$router.app.$emit("showSnackbar", `회원을 제재하지 못했습니다.[${err.response.data.message}]`, "error");
