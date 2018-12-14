@@ -41,10 +41,10 @@
                         <v-text-field name="reportTypeId" v-model="editedItem.reportTypeId" label="신고종류ID" readonly placeholder="신고종류 생성 시 자동으로 부여됩니다."></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-text-field name="reportTypeName" v-model="editedItem.reportTypeName" label="신고종류이름"></v-text-field>
+                        <v-text-field name="reportTypeName" v-model="editedItem.reportTypeName" maxlength="50" label="신고종류이름"></v-text-field>
                       </v-flex>
                       <v-flex xs12>
-                        <v-textarea name="reportTypeDescription" v-model="editedItem.reportTypeDescription" label="신고종류 설명" placeholder="신고종류의 설명입니다."></v-textarea>
+                        <v-textarea name="reportTypeDescription" v-model="editedItem.reportTypeDescription" maxlength="100" label="신고종류 설명" placeholder="신고종류의 설명입니다."></v-textarea>
                       </v-flex>
                     </v-layout>
                   </v-container>

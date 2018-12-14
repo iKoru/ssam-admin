@@ -215,6 +215,9 @@ export default {
             if (this.editedItem.animalNamesSet.has(x) || this.animals.some(y => y.animalName === x)) {
               this.$router.app.$emit("showSnackbar", `${x} : 이미 (임시로) 입력된 동물명입니다.`, "error");
               return;
+            }else if(x.length > 20){
+              this.$router.app.$emit("showSnackbar", `${x} : 동물명은 최대 20자입니다.`, "error");
+              return;
             }
             this.editedItem.animalNamesSet.add(x);
             this.editedItem.animalNames.push(x);

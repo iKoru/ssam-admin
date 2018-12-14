@@ -52,7 +52,7 @@
                         <v-text-field name="groupId" v-model="editedItem.groupId" label="그룹ID" readonly placeholder="그룹 생성 시 자동으로 부여됩니다."></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-text-field name="groupName" v-model="editedItem.groupName" label="그룹이름"></v-text-field>
+                        <v-text-field name="groupName" v-model="editedItem.groupName" maxlength="50" label="그룹이름"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
                         <v-select name="groupType" v-model="editedItem.groupType" :items="groupTypeItems" label="그룹종류"></v-select>
@@ -70,7 +70,7 @@
                       <!--  <v-text-field name="groupIconPath" v-model="editedItem.groupIconPath" label="그룹아이콘 경로"></v-text-field>-->
                       <!--</v-flex>-->
                       <v-flex xs12>
-                        <v-textarea name="groupDescription" v-model="editedItem.groupDescription" label="그룹 설명" placeholder="유저에게 공개 시 함께 보여집니다." hint="유저에게 공개 시 함께 보여집니다."></v-textarea>
+                        <v-textarea name="groupDescription" v-model="editedItem.groupDescription" label="그룹 설명" maxlength="500" placeholder="유저에게 공개 시 함께 보여집니다." hint="유저에게 공개 시 함께 보여집니다."></v-textarea>
                       </v-flex>
                     </v-layout>
                   </v-container>

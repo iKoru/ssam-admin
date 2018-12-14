@@ -54,13 +54,13 @@
                   <v-container grid-list-md>
                     <v-layout wrap>
                       <v-flex xs12>
-                        <v-text-field name="boardId" v-model="editedItem.boardId" label="게시판ID" :readonly="formTitle !== '게시판 생성'" :required="formTitle === '게시판 생성'" placeholder="주소창에 입력되는 경로가 됩니다."></v-text-field>
+                        <v-text-field name="boardId" v-model="editedItem.boardId" label="게시판ID" maxlength="15" :readonly="formTitle !== '게시판 생성'" :required="formTitle === '게시판 생성'" placeholder="주소창에 입력되는 경로가 됩니다."></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-text-field name="boardName" v-model="editedItem.boardName" label="게시판 이름"></v-text-field>
+                        <v-text-field name="boardName" v-model="editedItem.boardName" label="게시판 이름" maxlength="200"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-text-field name="ownerId" v-model="editedItem.ownerId" label="소유자ID" :required="formTitle === '게시판 생성'" placeholder="미입력 생성시 현재 ID로 지정"></v-text-field>
+                        <v-text-field name="ownerId" v-model="editedItem.ownerId" label="소유자ID" maxlength="50" :required="formTitle === '게시판 생성'" placeholder="미입력 생성시 현재 ID로 지정"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
                         <v-select name="status" v-model="editedItem.status" :items="boardStatusItems" label="상태"></v-select>
@@ -82,7 +82,7 @@
                         </v-autocomplete>
                       </v-flex>
                       <v-flex xs12>
-                        <v-textarea name="boardDescription" v-model="editedItem.boardDescription" label="게시판 설명" placeholder="게시판 설명" hint="게시판 페이지 제목에 표시되는 문구"></v-textarea>
+                        <v-textarea name="boardDescription" v-model="editedItem.boardDescription" maxlength="1000" label="게시판 설명" placeholder="게시판 설명" hint="게시판 페이지 제목에 표시되는 문구"></v-textarea>
                       </v-flex>
                       <v-flex xs12>
                         <v-text-field name="category" label="추가할 카테고리 입력" placeholder="여러개 동시 입력은 컴마로 구분합니다." hint="입력 후 엔터를 입력하면 연속으로 입력할 수 있습니다. 카테고리 변경은 항상 즉시반영됩니다." v-model="candidate" @keyup.enter="addCategoryChips(candidate)" clearable></v-text-field>

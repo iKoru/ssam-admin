@@ -47,7 +47,7 @@
                   <v-container grid-list-md>
                     <v-layout wrap>
                       <v-flex xs12>
-                        <v-text-field name="userId" v-model="editedItem.userId" label="제재 대상 사용자ID"></v-text-field>
+                        <v-text-field name="userId" v-model="editedItem.userId" maxlength="50" label="제재 대상 사용자ID"></v-text-field>
                       </v-flex>
                       <v-flex xs12>
                         <v-checkbox name="isBan" v-model="editedItem.isBan" label="인증취소 여부"></v-checkbox>

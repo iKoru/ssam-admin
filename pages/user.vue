@@ -56,20 +56,20 @@
                   <v-container grid-list-md>
                     <v-layout wrap>
                       <v-flex xs12>
-                        <v-text-field name="userId" v-model="editedItem.userId" label="ID" :readonly="formTitle !== '회원 생성'" :required="formTitle === '회원 생성'"></v-text-field>
+                        <v-text-field name="userId" v-model="editedItem.userId" maxlength="50" label="ID" :readonly="formTitle !== '회원 생성'" :required="formTitle === '회원 생성'"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-text-field name="email" v-model="editedItem.email" label="이메일"></v-text-field>
+                        <v-text-field name="email" v-model="editedItem.email" maxlength="100" label="이메일"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
                         <v-text-field name="password" type="password" v-model="editedItem.password" label="비밀번호" :required="formTitle === '회원 생성'" :placeholder="formTitle !== '회원 생성'?'입력하면 변경, 비우면 변경안함':null"></v-text-field>
                       </v-flex>
                       <template v-if="formTitle !== '회원 생성'">
                         <v-flex xs12 sm6>
-                          <v-text-field name="loungeNickName" v-model="editedItem.loungeNickName" label="라운지 필명"></v-text-field>
+                          <v-text-field name="loungeNickName" v-model="editedItem.loungeNickName" maxlength="50" label="라운지 필명"></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6>
-                          <v-text-field name="topicNickName" v-model="editedItem.topicNickName" label="토픽 닉네임"></v-text-field>
+                          <v-text-field name="topicNickName" v-model="editedItem.topicNickName" maxlength="50" label="토픽 닉네임"></v-text-field>
                         </v-flex>
                       </template>                      
                       <v-flex xs12 sm6>
