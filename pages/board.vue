@@ -72,7 +72,7 @@
                         <v-checkbox name="allowAnonymous" v-model="editedItem.allowAnonymous" label="익명글 허용 여부"></v-checkbox>
                       </v-flex>
                       <v-flex xs12 sm6>
-                        <v-select name="allGroupAuth" v-model="editedItem.allGroupAuth" :items="allGroupAuthItems" label="베스트 노출구분"></v-select>
+                        <v-select name="allGroupAuth" v-model="editedItem.allGroupAuth" :items="allGroupAuthItems" label="전체공개 구분" hint="라운지는 전체읽기허용으로 선택해야합니다."></v-select>
                       </v-flex>
                       <v-flex xs12>
                         <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
@@ -167,7 +167,7 @@ export default {
       categories: [],
       reservedDate: null,
       reservedContents: null,
-      password: undefined,
+      updatedCategory: false,
       overwrite: false,
       immediate: false
     },
@@ -184,7 +184,7 @@ export default {
       categories: [],
       reservedDate: null,
       reservedContents: null,
-      password: undefined,
+      updatedCategory: false,
       overwrite: false,
       immediate: false
     },
@@ -192,7 +192,7 @@ export default {
     pagination: {},
     searchTargetItems: [{text: "게시판ID", value: "boardId"}, {text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}],
     boardStatusItems: [{text: "정상", value: "NORMAL"}, {text: "삭제처리", value: "DELETED"}],
-    allGroupAuthItems: [{text: "비공개", value: "NONE"}, {text: "읽기전용", value: "READONLY"}],
+    allGroupAuthItems: [{text: "비공개(구독필수)", value: "NONE"}, {text: "전체읽기허용", value: "READONLY"}, {text: "전체구독허용", value: "READWRITE"}],
     boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "E"}],
     groupItems: [],
     searchQuery: null,
@@ -217,6 +217,19 @@ export default {
     pagination: {
       handler() {
         this.getDataFromApi();
+      },
+      deep: true
+    },
+    editedItem: {
+      handler(val) {
+        if (val.boardType === "L") {
+          this.$nextTick(() => {
+            this.editedItem.allGroupAuth = "READONLY";
+          });
+        } else if (val.boardType === "T" && this.editedIndex === -1 && !val.updatedCategory) {
+          //creating topic
+          this.$nextTick(() => this.addCategoryChips("일반,질문,정보"));
+        }
       },
       deep: true
     }
@@ -272,7 +285,7 @@ export default {
         }
         return;
       }
-      
+
       this.boards = response.data;
       this.boards.forEach(x => {
         x.categories = x.categories.filter(y => y !== null);
@@ -388,6 +401,7 @@ export default {
     },
     addCategoryChips(candidate) {
       if (typeof candidate === "string") {
+        this.editedItem.updatedCategory = true;
         candidate.split(",").forEach(x => {
           if (x !== "") {
             if (this.editedItem.categories.indexOf(x) >= 0) {
@@ -401,6 +415,7 @@ export default {
       }
     },
     removeCategoryChip(item) {
+      this.editedItem.updatedCategory = true;
       this.editedItem.categories.splice(this.editedItem.categories.indexOf(item), 1);
     }
   },
