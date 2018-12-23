@@ -43,7 +43,7 @@
             <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
           </template>
           <template slot="actions-prepend">
-            <v-dialog v-model="dialog" max-width="500px" :fullscreen="$vuetify.breakpoint.smAndDown">
+            <v-dialog v-model="dialog" max-width="600px" :fullscreen="$vuetify.breakpoint.smAndDown">
               <v-btn slot="activator" color="primary" dark class="mb-2">신규회원 생성</v-btn>
               <v-card>
                 <v-card-title>
@@ -71,7 +71,7 @@
                         <v-flex xs12 sm6>
                           <v-text-field name="topicNickName" v-model="editedItem.topicNickName" maxlength="50" label="토픽 닉네임"></v-text-field>
                         </v-flex>
-                      </template>                      
+                      </template>
                       <v-flex xs12 sm6>
                         <v-select name="status" v-model="editedItem.status" :items="userStatusItems" label="상태"></v-select>
                       </v-flex>
@@ -79,21 +79,21 @@
                         <v-checkbox name="isAdmin" v-model="editedItem.isAdmin" label="관리자 여부"></v-checkbox>
                       </v-flex>
                       <v-flex xs12 sm4>
-                        <v-autocomplete name="region" chips item-text="text" item-value="value" v-model="editedItem.region" :items="regionItems" label="지역">
+                        <v-autocomplete name="region" chips item-text="text" item-value="value" v-model="editedItem.region" :items="regionItems" label="지역" clearable>
                           <template slot="selection" slot-scope="props">
                             <v-chip :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item)">{{props.item.text}}</v-chip>
                           </template>
                         </v-autocomplete>
                       </v-flex>
                       <v-flex xs12 sm4>
-                        <v-autocomplete name="major" chips item-text="text" item-value="value" v-model="editedItem.major" :items="majorItems" label="전공">
+                        <v-autocomplete name="major" chips item-text="text" item-value="value" v-model="editedItem.major" :items="majorItems" label="전공" clearable>
                           <template slot="selection" slot-scope="props">
                             <v-chip :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item)">{{props.item.text}}</v-chip>
                           </template>
                         </v-autocomplete>
                       </v-flex>
                       <v-flex xs12 sm4>
-                        <v-autocomplete name="grade" chips item-text="text" item-value="value" v-model="editedItem.grade" :items="gradeItems" label="학년">
+                        <v-autocomplete name="grade" chips item-text="text" item-value="value" v-model="editedItem.grade" :items="gradeItems" label="학년" clearable>
                           <template slot="selection" slot-scope="props">
                             <v-chip :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item)">{{props.item.text}}</v-chip>
                           </template>
@@ -138,7 +138,6 @@
 </template>
 
 <script>
-
 export default {
   data: () => ({
     dialog: false,
@@ -158,7 +157,7 @@ export default {
       region: null,
       memo: "",
       email: "",
-      password: null,
+      password: null
     },
     defaultItem: {
       userId: "",
@@ -210,13 +209,13 @@ export default {
 
   created: async function() {
     let groups;
-    try{
-      groups = await this.$axios.get('/group');
-    }catch(err){
-      if(err.response){
+    try {
+      groups = await this.$axios.get("/group");
+    } catch (err) {
+      if (err.response) {
         this.$router.app.$emit("showSnackbar", `그룹 리스트를 불러오지 못했습니다.[${groups.data.message}]`, "error");
-      }else{
-        this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+      } else {
+        this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
       }
       return;
     }
@@ -266,17 +265,17 @@ export default {
       }
       let response;
       try {
-        response = await this.$axios.get('/user/list', {params: query});
+        response = await this.$axios.get("/user/list", {params: query});
       } catch (err) {
         this.loading = false;
-        if(err.response){
+        if (err.response) {
           this.$router.app.$emit("showSnackbar", `회원 리스트를 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ""}]`, "error");
-        }else{
-          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        } else {
+          this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
         }
         return;
       }
-      
+
       const majors = this.majorItems.map(z => z.value),
         regions = this.regionItems.map(z => z.value),
         grades = this.gradeItems.map(z => z.value),
@@ -293,15 +292,15 @@ export default {
       this.loading = false;
     },
     editItem(item) {
-      this.editedIndex = this.users.map(x=>x.userId).indexOf(item.userId);
+      this.editedIndex = this.users.map(x => x.userId).indexOf(item.userId);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem: async function(item) {
-      const index = this.users.map(x=>x.userId).indexOf(item.userId);
-      if(index < 0){
-        alert('선택된 회원이 없습니다. 확인 후 다시 시도해주세요.');
+      const index = this.users.map(x => x.userId).indexOf(item.userId);
+      if (index < 0) {
+        alert("선택된 회원이 없습니다. 확인 후 다시 시도해주세요.");
         return;
       }
       if (confirm("정말 이 회원을 삭제하시겠습니까? 해당 회원이 작성한 글 등은 유지되고, 소유한 토픽이 있을 경우 삭제가 불가능합니다.")) {
@@ -311,10 +310,10 @@ export default {
           response = await this.$axios.delete(`/user/${this.users[index].userId}`);
         } catch (err) {
           this.loading = false;
-          if(err.response){
+          if (err.response) {
             this.$router.app.$emit("showSnackbar", `회원을 삭제하지 못했습니다.[${err.response.data.message}]`, "error");
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           return;
         }
@@ -338,24 +337,24 @@ export default {
         //update
         let response;
         try {
-          response = await this.$axios.put('/user', this.editedItem);
+          response = await this.$axios.put("/user", this.editedItem);
         } catch (err) {
-          if(!err.response){
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          if (!err.response) {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
             return;
-          }else if(!(err.response.status === 400 && err.response.data.message === '변경된 내용이 없습니다.')){
+          } else if (!(err.response.status === 400 && err.response.data.message === "변경된 내용이 없습니다.")) {
             this.$router.app.$emit("showSnackbar", `회원정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
             return;
           }
         }
 
-        try{
-          response = await this.$axios.put('/user/group', {userId:this.editedItem.userId, groups:this.editedItem.groups.concat(this.editedItem.major, this.editedItem.grade, this.editedItem.region)})
-        } catch (err){
-          if(err.response){
-            this.$router.app.$emit("showSnackbar", `회원 공통정보 수정완료 후 전공/지역/학년/그룹 정보를 수정하는 도중 오류가 발생했습니다.[${err.response.data.message}]`, 'error')
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        try {
+          response = await this.$axios.put("/user/group", {userId: this.editedItem.userId, groups: this.editedItem.groups.concat(this.editedItem.major, this.editedItem.grade, this.editedItem.region)});
+        } catch (err) {
+          if (err.response) {
+            this.$router.app.$emit("showSnackbar", `회원 공통정보 수정완료 후 전공/지역/학년/그룹 정보를 수정하는 도중 오류가 발생했습니다.[${err.response.data.message}]`, "error");
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           return;
         }
@@ -365,12 +364,12 @@ export default {
         //create
         let response;
         try {
-          response = await this.$axios.post('/user', this.editedItem);
+          response = await this.$axios.post("/user", this.editedItem);
         } catch (err) {
-          if(err.response){
+          if (err.response) {
             this.$router.app.$emit("showSnackbar", `회원을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
-          }else{
-            this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+          } else {
+            this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
           }
           return;
         }
@@ -385,11 +384,11 @@ export default {
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
       this.editedItem.groups.splice(this.editedItem.groups.indexOf(item.value), 1);
     },
-    touchStart(item){
+    touchStart(item) {
       this.touching = item.boardId;
     },
-    touchEnd(item){
-      if(this.touching === item.boardId){
+    touchEnd(item) {
+      if (this.touching === item.boardId) {
         this.editItem(item);
       }
     }
