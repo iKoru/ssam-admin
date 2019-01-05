@@ -26,6 +26,7 @@
             <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
               <td>{{ props.item.boardId }}</td>
               <td class="text-xs-left">{{ props.item.boardName }}</td>
+              <td class="text-xs-left">{{ boards.some(x=>x.boardId === props.item.parentBoardId)?boards.find(x=>x.boardId === props.item.parentBoardId).boardName : (props.item.parentBoardId?'(삭제된 게시판)':'') }}</td>
               <td class="text-xs-left">{{ props.item.ownerId }}</td>
               <td class="text-xs-left">{{ boardTypeItems.find(x=>x.value === props.item.boardType).text }}</td>
               <td class="text-xs-left">{{ boardStatusItems.find(x=>x.value === props.item.status).text }}</td>
@@ -68,11 +69,14 @@
                       <v-flex xs12 sm6>
                         <v-select name="boardType" v-model="editedItem.boardType" :items="boardTypeItems" :readonly="formTitle !== '게시판 생성'" label="게시판 종류"></v-select>
                       </v-flex>
-                      <v-flex xs12 sm6>
-                        <v-checkbox name="allowAnonymous" v-model="editedItem.allowAnonymous" label="익명글 허용 여부"></v-checkbox>
+                      <v-flex xs12 sm4>
+                        <v-checkbox name="allowAnonymous" v-model="editedItem.allowAnonymous" label="익명글 허용"></v-checkbox>
                       </v-flex>
-                      <v-flex xs12 sm6>
+                      <v-flex xs12 sm4>
                         <v-select name="allGroupAuth" v-model="editedItem.allGroupAuth" :items="allGroupAuthItems" label="전체공개 구분" hint="라운지는 전체읽기허용으로 선택해야합니다."></v-select>
+                      </v-flex>
+                      <v-flex xs12 sm4>
+                        <v-select name="parentBoardId" v-model="editedItem.parentBoardId" :items="boards.filter(x=>x.boardId !== editedItem.boardId)" item-value="boardId" item-text="boardName" label="상위 게시판"></v-select>
                       </v-flex>
                       <v-flex xs12>
                         <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
@@ -91,7 +95,7 @@
                         <span>입력된 카테고리</span>
                         <br>
                         <template v-if="editedItem.categories.length > 0">
-                          <v-chip close v-if="category" v-for="category in editedItem.categories" :key="category" @input="removeCategoryChip(category)">{{category}}</v-chip>
+                          <v-chip close v-for="category in editedItem.categories.filter(x=>!!x)" :key="category" @input="removeCategoryChip(category)">{{category}}</v-chip>
                         </template>
                         <p v-else class="text-xs-center">아직 입력된 카테고리가 없습니다.</p>
                       </v-flex>
@@ -150,7 +154,7 @@ export default {
   data: () => ({
     dialog: false,
     showCalendar: false,
-    headers: [{text: "게시판ID", align: "left", value: "boardId"}, {text: "게시판 이름", align: "left", value: "boardName"}, {text: "소유자ID", align: "left", value: "ownerId"}, {text: "게시판 종류", align: "left", value: "boardType"}, {text: "상태", align: "left", value: "status"}, {text: "전체 접근허용 구분", sortable: false, value: "allGroupAuth"}, {text: "익명글 허용 여부", align: "center", value: "allowAnonymous", sortable: false}, {text: "변경예약일", align: "left", value: "reservedDate"}],
+    headers: [{text: "게시판ID", align: "left", value: "boardId"}, {text: "게시판 이름", align: "left", value: "boardName"}, {text:'상위 게시판', align:'left', value:'parentBoardId'}, {text: "소유자ID", align: "left", value: "ownerId"}, {text: "게시판 종류", align: "left", value: "boardType"}, {text: "상태", align: "left", value: "status"}, {text: "전체 접근허용 구분", sortable: false, value: "allGroupAuth"}, {text: "익명글 허용 여부", align: "center", value: "allowAnonymous", sortable: false}, {text: "변경예약일", align: "left", value: "reservedDate"}],
     boards: [],
     totalBoards: 0,
     editedIndex: -1,
@@ -167,6 +171,7 @@ export default {
       categories: [],
       reservedDate: null,
       reservedContents: null,
+      parentBoardId:null,
       updatedCategory: false,
       overwrite: false,
       immediate: false
@@ -184,6 +189,7 @@ export default {
       categories: [],
       reservedDate: null,
       reservedContents: null,
+      parentBoardId:null,
       updatedCategory: false,
       overwrite: false,
       immediate: false
