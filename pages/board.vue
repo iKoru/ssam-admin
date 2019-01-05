@@ -21,7 +21,7 @@
           </v-layout>
         </v-form>
 
-        <v-data-table :headers="headers" :items="boards" id="boardTable" :loading="loading" :total-items="totalBoards" :pagination.sync="pagination" :no-data-text="noresult">
+        <v-data-table :headers="headers" :items="boards" id="boardTable" :loading="loading" :no-data-text="noresult">
           <template slot="items" slot-scope="props">
             <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
               <td>{{ props.item.boardId }}</td>
@@ -195,7 +195,6 @@ export default {
       immediate: false
     },
     loading: true,
-    pagination: {},
     searchTargetItems: [{text: "게시판ID", value: "boardId"}, {text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}],
     boardStatusItems: [{text: "정상", value: "NORMAL"}, {text: "삭제처리", value: "DELETED"}],
     allGroupAuthItems: [{text: "비공개(구독필수)", value: "NONE"}, {text: "전체읽기허용", value: "READONLY"}, {text: "전체구독허용", value: "READWRITE"}],
@@ -219,12 +218,6 @@ export default {
   watch: {
     dialog(val) {
       val || this.close();
-    },
-    pagination: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true
     },
     editedItem: {
       handler(val) {
@@ -265,14 +258,7 @@ export default {
   methods: {
     getDataFromApi: async function() {
       this.loading = true;
-      const {sortBy, descending, page, rowsPerPage} = this.pagination;
-      let query = {
-        page: page
-      };
-      if (sortBy) {
-        query.sortTarget = sortBy;
-        query.isAscending = !descending;
-      }
+      let query={}
       if (this.searchTarget !== "boardType" && this.searchQuery) {
         query.searchTarget = this.searchTarget;
         query.searchQuery = this.searchQuery;
@@ -296,7 +282,6 @@ export default {
       this.boards.forEach(x => {
         x.categories = x.categories.filter(y => y !== null);
       });
-      this.totalBoards = response.data.length;
       this.loading = false;
     },
     editItem(item) {
