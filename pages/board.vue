@@ -79,7 +79,7 @@
                         <v-select name="allGroupAuth" v-model="editedItem.allGroupAuth" :items="allGroupAuthItems" label="전체공개 구분" hint="라운지는 전체읽기허용으로 선택해야합니다."></v-select>
                       </v-flex>
                       <v-flex xs12 sm4>
-                        <v-text-field name="recentOrder" v-model="editedItem.recentOrder" label="메인 최근글 노출순서" type="number" placeholder="미입력 생성시 노출 안함"></v-text-field>
+                        <v-text-field name="recentOrder" v-model="editedItem.recentOrder" label="메인 최근글 노출순서" type="number" placeholder="미입력시 노출 안함"></v-text-field>
                       </v-flex>
                       <v-flex xs12>
                         <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
