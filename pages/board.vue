@@ -42,7 +42,7 @@
             <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
           </template>
           <template slot="actions-prepend">
-            <v-dialog v-model="dialog" max-width="500px" lazy :fullscreen="$vuetify.breakpoint.smAndDown">
+            <v-dialog v-model="dialog" max-width="700px" lazy :fullscreen="$vuetify.breakpoint.smAndDown">
               <v-btn slot="activator" color="primary" dark class="mb-2">신규게시판 생성</v-btn>
               <v-card>
                 <v-card-title>
@@ -61,12 +61,15 @@
                         <v-text-field name="boardName" v-model="editedItem.boardName" label="게시판 이름" maxlength="200"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm6>
+                        <v-select name="parentBoardId" v-model="editedItem.parentBoardId" :items="boards.filter(x=>x.boardId !== editedItem.boardId && !x.parentBoardId)" item-value="boardId" item-text="boardName" label="상위 게시판"></v-select>
+                      </v-flex>
+                      <v-flex xs12 sm4>
                         <v-text-field name="ownerId" v-model="editedItem.ownerId" label="소유자ID" maxlength="50" :required="formTitle === '게시판 생성'" placeholder="미입력 생성시 현재 ID로 지정"></v-text-field>
                       </v-flex>
-                      <v-flex xs12 sm6>
+                      <v-flex xs12 sm4>
                         <v-select name="status" v-model="editedItem.status" :items="boardStatusItems" label="상태"></v-select>
                       </v-flex>
-                      <v-flex xs12 sm6>
+                      <v-flex xs12 sm4>
                         <v-select name="boardType" v-model="editedItem.boardType" :items="boardTypeItems" :readonly="formTitle !== '게시판 생성'" label="게시판 종류"></v-select>
                       </v-flex>
                       <v-flex xs12 sm4>
@@ -76,7 +79,7 @@
                         <v-select name="allGroupAuth" v-model="editedItem.allGroupAuth" :items="allGroupAuthItems" label="전체공개 구분" hint="라운지는 전체읽기허용으로 선택해야합니다."></v-select>
                       </v-flex>
                       <v-flex xs12 sm4>
-                        <v-select name="parentBoardId" v-model="editedItem.parentBoardId" :items="boards.filter(x=>x.boardId !== editedItem.boardId)" item-value="boardId" item-text="boardName" label="상위 게시판"></v-select>
+                        <v-text-field name="recentOrder" v-model="editedItem.recentOrder" label="메인 최근글 노출순서" type="number" placeholder="미입력 생성시 노출 안함"></v-text-field>
                       </v-flex>
                       <v-flex xs12>
                         <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
@@ -172,6 +175,7 @@ export default {
       reservedDate: null,
       reservedContents: null,
       parentBoardId:null,
+      recentOrder: null,
       updatedCategory: false,
       overwrite: false,
       immediate: false
@@ -190,6 +194,7 @@ export default {
       reservedDate: null,
       reservedContents: null,
       parentBoardId:null,
+      recentOrder: null,
       updatedCategory: false,
       overwrite: false,
       immediate: false
