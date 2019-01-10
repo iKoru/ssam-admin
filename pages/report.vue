@@ -51,7 +51,7 @@
                       완료<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn>
                     </template>
                   </td>
-                  <td class="text-xs-right">{{ $moment(props.item.reportDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') }}</td>
+                  <td class="text-xs-right">{{ $moment(props.item.reportDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
                   <td><v-btn small @click="sanction(props.item)">제재</v-btn></td>
                 </tr>
               </template>
@@ -101,7 +101,7 @@
                     <template v-else>
                       완료<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn>
                     </template>
-                  <td class="text-xs-right">{{ $moment(props.item.reportDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') }}</td>
+                  <td class="text-xs-right">{{ $moment(props.item.reportDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
                   <td><v-btn small @click="sanction(props.item)">제재</v-btn></td>
                 </tr>
               </template>

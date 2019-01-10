@@ -24,7 +24,7 @@
           <template slot="items" slot-scope="props">
             <tr>
               <td class="text-xs-left">{{ props.item.userId }}</td>
-              <td class="text-xs-right">{{ props.item.sanctionDate?$moment(props.item.sanctionDate, 'YYYYMMDD').format('YYYY-MM-DD'):'' }}</td>
+              <td class="text-xs-right">{{ props.item.sanctionDate?$moment(props.item.sanctionDate, 'YYYYMMDD').format('Y-MM-DD'):'' }}</td>
               <td class="text-xs-left">{{ props.item.sanctionContents }}</td>
               <td class="text-xs-left">{{ props.item.adminId }}</td>
             </tr>
@@ -42,7 +42,7 @@
                   <v-spacer></v-spacer>
                   <v-icon @click="close">close</v-icon>
                 </v-card-title>
-    
+
                 <v-card-text>
                   <v-container grid-list-md>
                     <v-layout wrap>
@@ -60,21 +60,11 @@
                       </v-flex>
                       <v-flex x12 sm7>
                         <v-btn-toggle v-model="editedItem.writeRestrictDays">
-                          <v-btn flat value="7" :disabled="editedItem.isBan">
-                            1주
-                          </v-btn>
-                          <v-btn flat value="30" :disabled="editedItem.isBan">
-                            1개월
-                          </v-btn>
-                          <v-btn flat value="93" :disabled="editedItem.isBan">
-                            3개월
-                          </v-btn>
-                          <v-btn flat value="186" :disabled="editedItem.isBan">
-                            6개월
-                          </v-btn>
-                          <v-btn flat value="365" :disabled="editedItem.isBan">
-                            1년
-                          </v-btn>
+                          <v-btn flat value="7" :disabled="editedItem.isBan">1주</v-btn>
+                          <v-btn flat value="30" :disabled="editedItem.isBan">1개월</v-btn>
+                          <v-btn flat value="93" :disabled="editedItem.isBan">3개월</v-btn>
+                          <v-btn flat value="186" :disabled="editedItem.isBan">6개월</v-btn>
+                          <v-btn flat value="365" :disabled="editedItem.isBan">1년</v-btn>
                         </v-btn-toggle>
                       </v-flex>
                       <v-flex xs12 sm5>
@@ -82,27 +72,17 @@
                       </v-flex>
                       <v-flex x12 sm7>
                         <v-btn-toggle v-model="editedItem.readRestrictDays">
-                          <v-btn flat value="7" :disabled="editedItem.isBan">
-                            1주
-                          </v-btn>
-                          <v-btn flat value="30" :disabled="editedItem.isBan">
-                            1개월
-                          </v-btn>
-                          <v-btn flat value="93" :disabled="editedItem.isBan">
-                            3개월
-                          </v-btn>
-                          <v-btn flat value="186" :disabled="editedItem.isBan">
-                            6개월
-                          </v-btn>
-                          <v-btn flat value="365" :disabled="editedItem.isBan">
-                            1년
-                          </v-btn>
+                          <v-btn flat value="7" :disabled="editedItem.isBan">1주</v-btn>
+                          <v-btn flat value="30" :disabled="editedItem.isBan">1개월</v-btn>
+                          <v-btn flat value="93" :disabled="editedItem.isBan">3개월</v-btn>
+                          <v-btn flat value="186" :disabled="editedItem.isBan">6개월</v-btn>
+                          <v-btn flat value="365" :disabled="editedItem.isBan">1년</v-btn>
                         </v-btn-toggle>
                       </v-flex>
                     </v-layout>
                   </v-container>
                 </v-card-text>
-    
+
                 <v-card-actions class="pa-3">
                   <v-spacer></v-spacer>
                   <v-btn color="blue darken-1" flat @click="close">취소</v-btn>
@@ -119,26 +99,25 @@
 </template>
 
 <script>
-
 export default {
   data: () => ({
     dialog: false,
-    headers: [{text: "ID", sortable:false, align: "left", value: "userId"}, {text: "제재 일자", sortable:false, align:'right', value: "sanctionDate"}, {text: "제재 내용", sortable:false, align:'left', value: "sanctionContents"}, {text: "제재 등록자 ID", sortable: false, value: "adminId"}],
+    headers: [{text: "ID", sortable: false, align: "left", value: "userId"}, {text: "제재 일자", sortable: false, align: "right", value: "sanctionDate"}, {text: "제재 내용", sortable: false, align: "left", value: "sanctionContents"}, {text: "제재 등록자 ID", sortable: false, value: "adminId"}],
     sanctions: [],
     totalSanctions: 0,
     editedIndex: -1,
     editedItem: {
       userId: "",
-      boardId: '',
+      boardId: "",
       writeRestrictDays: null,
-      readRestrictDays:null,
+      readRestrictDays: null,
       isBan: false
     },
     defaultItem: {
       userId: "",
-      boardId: '',
+      boardId: "",
       writeRestrictDays: null,
-      readRestrictDays:null,
+      readRestrictDays: null,
       isBan: false
     },
     loading: false,
@@ -155,21 +134,21 @@ export default {
     },
     pagination: {
       handler() {
-        if(this.searchQuery){
+        if (this.searchQuery) {
           this.getDataFromApi();
         }
       },
       deep: true
     },
-    searchQuery(){
-      if(this.totalSanctions > 0){
+    searchQuery() {
+      if (this.totalSanctions > 0) {
         this.sanctions = [];
         this.totalSanctions = 0;
       }
     }
   },
 
-  created: async function(){
+  created: async function() {
     /*let board;
     try{
       board = await this.$axios.get("/board/list");
@@ -181,13 +160,13 @@ export default {
       return {text: x.boardName, value: x.boardId};
     });*/
   },
-  
+
   mounted: async function() {
-    if(this.boardItems.length === 0){
+    if (this.boardItems.length === 0) {
       let board;
-      try{
+      try {
         board = await this.$axios.get("/board/list");
-      }catch(err){
+      } catch (err) {
         this.$router.app.$emit("showSnackbar", `게시판 리스트를 불러오지 못했습니다.[${err.response.data.message}]`, "error");
         return;
       }
@@ -199,8 +178,8 @@ export default {
 
   methods: {
     getDataFromApi: async function() {
-      if(!this.searchQuery){
-        this.$router.app.$emit("showSnackbar", '검색할 사용자ID는 필수입니다.', "error");
+      if (!this.searchQuery) {
+        this.$router.app.$emit("showSnackbar", "검색할 사용자ID는 필수입니다.", "error");
         return;
       }
       this.loading = true;
@@ -216,22 +195,22 @@ export default {
       }
       let response;
       try {
-        response = await this.$axios.get('/sanction', {params: query});
+        response = await this.$axios.get("/sanction", {params: query});
       } catch (err) {
         this.loading = false;
-        if(err.response){
+        if (err.response) {
           this.$router.app.$emit("showSnackbar", `회원 제재 리스트를 불러오지 못했습니다.[${err.response.data ? err.response.data.message : ""}]`, "error");
-        }else{
-          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        } else {
+          this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
         }
         return;
       }
-      
-      this.sanctions = response.data
+
+      this.sanctions = response.data;
       this.totalSanctions = response.data.length;
       this.loading = false;
     },
-    
+
     close() {
       this.dialog = false;
       setTimeout(() => {
@@ -241,21 +220,21 @@ export default {
     },
 
     save: async function() {
-      if(!this.editedItem.userId){
-        this.$router.app.$emit("showSnackbar", '제재할 사용자 ID를 입력해주세요.', "error");
+      if (!this.editedItem.userId) {
+        this.$router.app.$emit("showSnackbar", "제재할 사용자 ID를 입력해주세요.", "error");
         return;
-      }else if(!this.editedItem.isBan && !(this.editedItem.boardId && (this.editedItem.writeRestrictDays || this.editedItem.readRestrictDays))){
-        this.$router.app.$emit("showSnackbar", '제재할 게시판ID와 내용을 모두 입력해주세요.', "error");
+      } else if (!this.editedItem.isBan && !(this.editedItem.boardId && (this.editedItem.writeRestrictDays || this.editedItem.readRestrictDays))) {
+        this.$router.app.$emit("showSnackbar", "제재할 게시판ID와 내용을 모두 입력해주세요.", "error");
         return;
       }
       let response;
       try {
-        response = await this.$axios.post('/sanction', this.editedItem);
+        response = await this.$axios.post("/sanction", this.editedItem);
       } catch (err) {
-        if(err.response){
+        if (err.response) {
           this.$router.app.$emit("showSnackbar", `회원을 제재하지 못했습니다.[${err.response.data.message}]`, "error");
-        }else{
-          this.$router.app.$emit('showSnackbar', '서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.', 'error');
+        } else {
+          this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
         }
         return;
       }

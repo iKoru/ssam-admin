@@ -34,7 +34,7 @@
               <td class="justify-center align-center fill-height">
                 <v-checkbox name="allowAnonymous" v-model="props.item.allowAnonymous" readonly hide-details primary class="align-center justify-center"></v-checkbox>
               </td>
-              <td class="text-xs-left">{{ props.item.reservedDate?$moment(props.item.reservedDate, 'YYYYMMDD').format('YYYY-MM-DD'):'' }}</td>
+              <td class="text-xs-left">{{ props.item.reservedDate?$moment(props.item.reservedDate, 'YYYYMMDD').format('Y-MM-DD'):'' }}</td>
             </tr>
           </template>
           <template slot="no-data">
@@ -317,7 +317,7 @@ export default {
       this.editedIndex = this.boards.map(x => x.boardId).indexOf(item.boardId);
       this.editedItem = Object.assign({}, item);
       if (this.editedItem.reservedDate) {
-        this.editedItem.reservedDate = this.$moment(this.editedItem.reservedDate, "YYYYMMDD").format("YYYY-MM-DD");
+        this.editedItem.reservedDate = this.$moment(this.editedItem.reservedDate, "YYYYMMDD").format("Y-MM-DD");
       }
       this.dialog = true;
     },

@@ -36,7 +36,7 @@
                     <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.title }}</a>
                   </td>
                   <td class="text-xs-left">{{ props.item.isDeleted?'삭제됨':'정상' }}</td>
-                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') }}</td>
+                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
                 </tr>
               </template>
               <template slot="no-data">
@@ -71,7 +71,7 @@
                     <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.contents }}</a>
                   </td>
                   <td class="text-xs-left">{{ props.item.isDeleted?'삭제됨':'정상' }}</td>
-                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss') }}</td>
+                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
                 </tr>
               </template>
               <template slot="no-data">
