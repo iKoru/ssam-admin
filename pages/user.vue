@@ -176,7 +176,7 @@ export default {
     loading: true,
     pagination: {},
     searchTargetItems: [{text: "이메일", value: "email"}, {text: "ID", value: "userId"}, {text: "닉네임", value: "nickName"}, {text: "상태", value: "status"}, {text: "그룹", value: "groupId"}],
-    userStatusItems: [{text: "인증전", value: "NORMAL"}, {text: "인증완료", value: "AUTHORIZED"}, {text: "잠김", value: "BLOCKED"}, {text: "삭제처리", value: "DELETED"}],
+    userStatusItems: [{text: "정상", value: "NORMAL"}, {text: "삭제처리", value: "DELETED"}],
     majorItems: [],
     gradeItems: [],
     regionItems: [],

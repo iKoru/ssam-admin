@@ -81,12 +81,21 @@
                       <v-flex xs12 sm4>
                         <v-text-field name="recentOrder" v-model="editedItem.recentOrder" label="메인 최근글 노출순서" type="number" placeholder="미입력시 노출 안함"></v-text-field>
                       </v-flex>
-                      <v-flex xs12>
+                      <v-flex xs12 v-if="editedItem.boardType === 'T'">
                         <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
                           <template slot="selection" slot-scope="props">
                             <v-chip close :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, editedItem.allowedGroups)">{{props.item.text}}</v-chip>
                           </template>
                         </v-autocomplete>
+                      </v-flex>
+                      <v-flex xs4>
+                        <v-select v-model="editedItem.statusAuth.read" :items="groupTypeItems" chips multiple label="읽기 허용 사용자(그룹)"></v-select>
+                      </v-flex>
+                      <v-flex xs4>
+                        <v-select v-model="editedItem.statusAuth.write" :items="groupTypeItems" chips multiple label="글쓰기 허용 사용자(그룹)"></v-select>
+                      </v-flex>
+                      <v-flex xs4>
+                        <v-select v-model="editedItem.statusAuth.comment" :items="groupTypeItems" chips multiple label="댓글쓰기 허용 사용자(그룹)"></v-select>
                       </v-flex>
                       <v-flex xs12>
                         <v-textarea name="boardDescription" v-model="editedItem.boardDescription" maxlength="1000" label="게시판 설명" placeholder="게시판 설명" hint="게시판 페이지 제목에 표시되는 문구"></v-textarea>
@@ -177,6 +186,11 @@ export default {
       parentBoardId:null,
       recentOrder: null,
       updatedCategory: false,
+      statusAuth:{
+        read:['A'],
+        write:['A'],
+        comment:['A']
+      },
       overwrite: false,
       immediate: false
     },
@@ -196,6 +210,11 @@ export default {
       parentBoardId:null,
       recentOrder: null,
       updatedCategory: false,
+      statusAuth:{
+        read:['A'],
+        write:['A'],
+        comment:['A']
+      },
       overwrite: false,
       immediate: false
     },
@@ -205,6 +224,7 @@ export default {
     allGroupAuthItems: [{text: "비공개(구독필수)", value: "NONE"}, {text: "전체읽기허용", value: "READONLY"}, {text: "전체구독허용", value: "READWRITE"}],
     boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "E"}, {text:'예비교사', value:'P'}],
     groupItems: [],
+    groupTypeItems:[{text:'인증', value:'A'}, {text:'인증만료(전직교사)', value:'E'}, {text:'미인증(예비교사)', value:'N'}, {text:'인증제한(제재)', value:'D'}],
     searchQuery: null,
     searchTarget: "boardId",
     searchStatus: null,
