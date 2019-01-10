@@ -129,7 +129,7 @@ export default {
     },
     loading: true,
     pagination: {rowsPerPage: 10},
-    groupTypeItems: [{text: "전공", value: "M"}, {text: "학년", value: "G"}, {text: "지역", value: "R"}, {text: "일반 그룹", value: "N"}],
+    groupTypeItems: [{text: "전공", value: "M"}, {text: "학년", value: "G"}, {text: "지역", value: "R"}, {text: "일반 그룹", value: "N"}, {text:'인증', value:'A'}, {text:'인증만료(전직교사)', value:'E'}, {text:'인증제한(차단)', value:'D'}],
     groupItems: [],
     searchQuery: null,
     searchGroupType: null,

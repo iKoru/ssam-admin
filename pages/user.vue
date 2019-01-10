@@ -235,7 +235,7 @@ export default {
         return {text: x.groupName, value: x.groupId};
       });
     this.groupItems = groups.data
-      .filter(x => x.groupType === "N")
+      .filter(x => ['N', 'A', 'E', 'D'].includes(x.groupType))
       .map(x => {
         return {text: x.groupName, value: x.groupId};
       });
@@ -349,7 +349,7 @@ export default {
         }
 
         try {
-          response = await this.$axios.put("/user/group", {userId: this.editedItem.userId, groups: this.editedItem.groups.concat(this.editedItem.major, this.editedItem.grade, this.editedItem.region)});
+          response = await this.$axios.put("/user/group", {userId: this.editedItem.userId, groups: this.editedItem.groups.concat(this.editedItem.major, this.editedItem.grade, this.editedItem.region).filter(x=>x && x !== '')});
         } catch (err) {
           if (err.response) {
             this.$router.app.$emit("showSnackbar", `회원 공통정보 수정완료 후 전공/지역/학년/그룹 정보를 수정하는 도중 오류가 발생했습니다.[${err.response.data.message}]`, "error");
