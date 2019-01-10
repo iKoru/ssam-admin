@@ -59,7 +59,7 @@ const Menu = [
   {
     title: '동물명 관리',
     group: 'board',
-    icon: 'style',
+    icon: 'pets',
     name: 'animal'
   }
 ];

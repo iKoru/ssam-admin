@@ -203,7 +203,7 @@ export default {
     searchTargetItems: [{text: "게시판ID", value: "boardId"}, {text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}],
     boardStatusItems: [{text: "정상", value: "NORMAL"}, {text: "삭제처리", value: "DELETED"}],
     allGroupAuthItems: [{text: "비공개(구독필수)", value: "NONE"}, {text: "전체읽기허용", value: "READONLY"}, {text: "전체구독허용", value: "READWRITE"}],
-    boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "E"}],
+    boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "E"}, {text:'예비교사', value:'P'}],
     groupItems: [],
     searchQuery: null,
     searchTarget: "boardId",
@@ -233,6 +233,10 @@ export default {
         } else if (val.boardType === "T" && this.editedIndex === -1 && !val.updatedCategory) {
           //creating topic
           this.$nextTick(() => this.addCategoryChips("일반,질문,정보"));
+        } else if(val.boardType === 'P'){
+          this.$nextTick(() => {
+            this.editedItem.allGroupAuth = 'READWRITE';
+          })
         }
       },
       deep: true
@@ -349,6 +353,9 @@ export default {
         }
 
         this.addCategoryChips(this.candidate);
+        if(this.editedItem.recentOrder === ''){
+          this.editedItem.recentOrder = null;
+        }
         let response;
         try {
           response = await this.$axios.put("/board", this.editedItem);
