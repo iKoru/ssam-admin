@@ -138,6 +138,7 @@
 </template>
 
 <script>
+const groupName = {M: "전공", G: "학년", N: "일반", R: "지역", A:'인증', D:'인증제한', E:'인증만료'};
 export default {
   data: () => ({
     dialog: false,
@@ -236,9 +237,29 @@ export default {
       });
     this.groupItems = groups.data
       .filter(x => ['N', 'A', 'E', 'D'].includes(x.groupType))
-      .map(x => {
-        return {text: x.groupName, value: x.groupId};
-      });
+      
+    this.groupItems = this.groupItems.sort((a, b) => a.groupType < b.groupType);
+    let previous = null;
+    let i = 0;
+    while (i < this.groupItems.length) {
+      if (previous !== this.groupItems[i].groupType) {
+        if (previous) {
+          previous = this.groupItems[i].groupType;
+          this.groupItems.splice(i, 0, {divider: true});
+          i++;
+        } else {
+          previous = this.groupItems[i].groupType;
+        }
+        this.groupItems.splice(i, 0, {header: groupName[previous]});
+        i++;
+      }
+      i++;
+    }
+    console.log(this.groupItems);
+    this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
+    /*this.groupItems.map(x => {
+      return {text: x.groupName, value: x.groupId};
+    });*/
   },
 
   mounted: function() {

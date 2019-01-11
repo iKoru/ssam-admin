@@ -84,7 +84,12 @@
                       <v-flex xs12 v-if="editedItem.boardType === 'T'">
                         <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
                           <template slot="selection" slot-scope="props">
-                            <v-chip close :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, editedItem.allowedGroups)">{{props.item.text}}</v-chip>
+                            <v-chip close small :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, editedItem.allowedGroups)">{{props.item.text}}</v-chip>
+                          </template>
+                          <template slot="item" slot-scope="data">
+                            <v-list-tile-content>
+                              <v-list-tile-title v-html="data.item.text"></v-list-tile-title>
+                            </v-list-tile-content>
                           </template>
                         </v-autocomplete>
                       </v-flex>
@@ -162,6 +167,7 @@
 </template>
 
 <script>
+const groupName = {M: "전공", G: "학년", N: "일반", R: "지역", A:'인증', D:'인증제한', E:'인증만료'};
 export default {
   data: () => ({
     dialog: false,
@@ -222,7 +228,7 @@ export default {
     searchTargetItems: [{text: "게시판ID", value: "boardId"}, {text: "게시판 이름", value: "boardName"}, {text: "게시판 종류", value: "boardType"}],
     boardStatusItems: [{text: "정상", value: "NORMAL"}, {text: "삭제처리", value: "DELETED"}],
     allGroupAuthItems: [{text: "비공개(구독필수)", value: "NONE"}, {text: "전체읽기허용", value: "READONLY"}, {text: "전체구독허용", value: "READWRITE"}],
-    boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "E"}, {text:'예비교사', value:'P'}],
+    boardTypeItems: [{text: "라운지", value: "L"}, {text: "토픽", value: "T"}, {text: "아카이브", value: "D"}, {text: "기타", value: "X"}, {text:'예비교사', value:'N'}, {text:'전직교사', value:'E'}],
     groupItems: [],
     groupTypeItems:[{text:'인증', value:'A'}, {text:'인증만료(전직교사)', value:'E'}, {text:'미인증(예비교사)', value:'N'}, {text:'인증제한(제재)', value:'D'}],
     searchQuery: null,
@@ -253,7 +259,7 @@ export default {
         } else if (val.boardType === "T" && this.editedIndex === -1 && !val.updatedCategory) {
           //creating topic
           this.$nextTick(() => this.addCategoryChips("일반,질문,정보"));
-        } else if(val.boardType === 'P'){
+        } else if(val.boardType === 'N' || val.boardType === 'E'){
           this.$nextTick(() => {
             this.editedItem.allGroupAuth = 'READWRITE';
           })
@@ -275,9 +281,28 @@ export default {
       }
       return;
     }
-    this.groupItems = groups.data.map(x => {
+    this.groupItems = groups.data.sort((a, b) => a.groupType < b.groupType);
+    let previous = null;
+    let i = 0;
+    while (i < this.groupItems.length) {
+      if (previous !== this.groupItems[i].groupType) {
+        if (previous) {
+          previous = this.groupItems[i].groupType;
+          this.groupItems.splice(i, 0, {divider: true});
+          i++;
+        } else {
+          previous = this.groupItems[i].groupType;
+        }
+        this.groupItems.splice(i, 0, {header: groupName[previous]});
+        i++;
+      }
+      i++;
+    }
+    console.log(this.groupItems);
+    this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
+    /*this.groupItems = groups.data.map(x => {
       return {text: x.groupName, value: x.groupId};
-    });
+    });*/
   },
 
   mounted: function() {
