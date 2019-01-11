@@ -376,6 +376,9 @@ export default {
         if(this.editedItem.recentOrder === ''){
           this.editedItem.recentOrder = null;
         }
+        this.editedItem.statusAuth.read = this.editedItem.statusAuth.read.filter(x=>x)
+        this.editedItem.statusAuth.write = this.editedItem.statusAuth.write.filter(x=>x)
+        this.editedItem.statusAuth.comment = this.editedItem.statusAuth.comment.filter(x=>x)
         let response;
         try {
           response = await this.$axios.put("/board", this.editedItem);
