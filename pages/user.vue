@@ -255,11 +255,7 @@ export default {
       }
       i++;
     }
-    console.log(this.groupItems);
     this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
-    /*this.groupItems.map(x => {
-      return {text: x.groupName, value: x.groupId};
-    });*/
   },
 
   mounted: function() {

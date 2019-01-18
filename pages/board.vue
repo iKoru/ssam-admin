@@ -57,11 +57,14 @@
                       <v-flex xs12>
                         <v-text-field name="boardId" v-model="editedItem.boardId" label="게시판ID" maxlength="15" :readonly="formTitle !== '게시판 생성'" :required="formTitle === '게시판 생성'" placeholder="주소창에 입력되는 경로가 됩니다."></v-text-field>
                       </v-flex>
-                      <v-flex xs12 sm6>
+                      <v-flex xs12 sm4>
                         <v-text-field name="boardName" v-model="editedItem.boardName" label="게시판 이름" maxlength="200"></v-text-field>
                       </v-flex>
-                      <v-flex xs12 sm6>
+                      <v-flex xs12 sm4>
                         <v-select name="parentBoardId" v-model="editedItem.parentBoardId" :items="boards.filter(x=>x.boardId !== editedItem.boardId && !x.parentBoardId)" item-value="boardId" item-text="boardName" label="상위 게시판"></v-select>
+                      </v-flex>
+                      <v-flex xs12 sm4>
+                        <v-text-field name="orderNumber" v-model="editedItem.orderNumber" label="게시판 순서" type="number" placeholder="메뉴바에 보이는 순서"></v-text-field>
                       </v-flex>
                       <v-flex xs12 sm4>
                         <v-text-field name="ownerId" v-model="editedItem.ownerId" label="소유자ID" maxlength="50" :required="formTitle === '게시판 생성'" placeholder="미입력 생성시 현재 ID로 지정"></v-text-field>
@@ -191,6 +194,7 @@ export default {
       reservedContents: null,
       parentBoardId:null,
       recentOrder: null,
+      orderNumber:null,
       updatedCategory: false,
       statusAuth:{
         read:['A'],
@@ -215,6 +219,7 @@ export default {
       reservedContents: null,
       parentBoardId:null,
       recentOrder: null,
+      orderNumber:null,
       updatedCategory: false,
       statusAuth:{
         read:['A'],
@@ -298,11 +303,7 @@ export default {
       }
       i++;
     }
-    console.log(this.groupItems);
     this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
-    /*this.groupItems = groups.data.map(x => {
-      return {text: x.groupName, value: x.groupId};
-    });*/
   },
 
   mounted: function() {
@@ -400,6 +401,9 @@ export default {
         this.addCategoryChips(this.candidate);
         if(this.editedItem.recentOrder === ''){
           this.editedItem.recentOrder = null;
+        }
+        if(this.editedItem.orderNumber === ''){
+          this.editedItem.orderNumber = null;
         }
         this.editedItem.statusAuth.read = this.editedItem.statusAuth.read.filter(x=>x)
         this.editedItem.statusAuth.write = this.editedItem.statusAuth.write.filter(x=>x)
