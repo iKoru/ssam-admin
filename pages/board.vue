@@ -84,8 +84,8 @@
                       <v-flex xs12 sm4>
                         <v-text-field name="recentOrder" v-model="editedItem.recentOrder" label="메인 최근글 노출순서" type="number" placeholder="미입력시 노출 안함"></v-text-field>
                       </v-flex>
-                      <v-flex xs12 v-if="editedItem.boardType === 'T'">
-                        <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.allowedGroups" :items="groupItems" label="구독허용 그룹">
+                      <v-flex xs12>
+                        <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.groups" :items="groupItems" label="구독(글쓰기)허용 그룹">
                           <template slot="selection" slot-scope="props">
                             <v-chip close small :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, editedItem.allowedGroups)">{{props.item.text}}</v-chip>
                           </template>
@@ -185,6 +185,7 @@ export default {
       ownerId: "",
       status: "NORMAL",
       allowAnonymous: false,
+      groups:[],
       allowedGroups: [],
       boardType: null,
       allGroupAuth: "NORMAL",
@@ -210,6 +211,7 @@ export default {
       ownerId: "",
       status: "NORMAL",
       allowAnonymous: false,
+      groups:[],
       allowedGroups: [],
       boardType: null,
       allGroupAuth: "NORMAL",
@@ -286,7 +288,7 @@ export default {
       }
       return;
     }
-    this.groupItems = groups.data.sort((a, b) => a.groupType < b.groupType);
+    this.groupItems = groups.data.sort((a, b) => a.groupType < b.groupType ? -1 : (a.groupType === b.groupType ? 0 : 1));
     let previous = null;
     let i = 0;
     while (i < this.groupItems.length) {
@@ -342,6 +344,7 @@ export default {
     editItem(item) {
       this.editedIndex = this.boards.map(x => x.boardId).indexOf(item.boardId);
       this.editedItem = Object.assign({}, item);
+      this.editedItem.groups = this.editedItem.allowedGroups.map(x=>x);
       if (this.editedItem.reservedDate) {
         this.editedItem.reservedDate = this.$moment(this.editedItem.reservedDate, "YYYYMMDD").format("Y-MM-DD");
       }
@@ -408,6 +411,8 @@ export default {
         this.editedItem.statusAuth.read = this.editedItem.statusAuth.read.filter(x=>x)
         this.editedItem.statusAuth.write = this.editedItem.statusAuth.write.filter(x=>x)
         this.editedItem.statusAuth.comment = this.editedItem.statusAuth.comment.filter(x=>x)
+        this.editedItem.useCategory = undefined;
+        this.editedItem.allowedGroups = this.editedItem.allowedGroups.map(x=>({groupId:x, authType:'READWRITE'}))
         let response;
         try {
           response = await this.$axios.put("/board", this.editedItem);
@@ -425,6 +430,7 @@ export default {
       } else {
         //create
         let response;
+        this.editedItem.allowedGroups = this.editedItem.groups.map(x=>({groupId:x, authType:'READWRITE'}))
         try {
           response = await this.$axios.post("/board", this.editedItem);
         } catch (err) {
@@ -443,6 +449,7 @@ export default {
       this.close();
     },
     removeChip(props, item, list) {
+      console.log(props.parent.selectedItems, item.value)
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
       list.splice(list.indexOf(item.value), 1);
     },
