@@ -2,62 +2,22 @@
   <v-toolbar color="primary" :fixed="false" dark app>
     <v-toolbar-side-icon @click.stop="handleDrawerToggle"></v-toolbar-side-icon>
     <v-toolbar-title class="ml-0 pl-3">pedagy admin</v-toolbar-title>
-    <!--<v-text-field flat solo-inverted prepend-icon="search" label="Search" class="hidden-sm-and-down"></v-text-field>-->
     <v-spacer></v-spacer>
     <span>{{nickName || ''}}님 로그인</span>
     <v-btn @click="signout">로그아웃</v-btn>
-    <!--<v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
-      <v-btn icon large flat slot="activator">
-        <v-avatar size="30px">
-          <img src="~static/img/avatar/man_4.jpg" alt="Michael Wang">
-        </v-avatar>
-      </v-btn>
-      <v-list class="pa-0">
-        <v-list-tile v-for="(item,index) in items" :to="!item.href ? { name: item.name } : null" :href="item.href" @click="item.click" ripple="ripple" :disabled="item.disabled" :target="item.target" rel="noopener" :key="index">
-          <v-list-tile-action v-if="item.icon">
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-menu>-->
   </v-toolbar>
 </template>
 <script>
+
+function deleteCookie(name) {
+  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+}
 
 export default {
   name: "app-toolbar",
   components: {},
   props:['nickName'],
   data: () => ({
-    /*items: [
-      {
-        icon: "account_circle",
-        href: "#",
-        title: "Profile",
-        click: e => {
-          console.log(e);
-        }
-      },
-      {
-        icon: "settings",
-        href: "#",
-        title: "Settings",
-        click: e => {
-          console.log(e);
-        }
-      },
-      {
-        icon: "fullscreen_exit",
-        href: "#",
-        title: "Logout",
-        click: e => {
-          this.$emit("APP_LOGOUT");
-        }
-      }
-    ]*/
   }),
   computed: {
     toolbarColor() {
@@ -69,7 +29,9 @@ export default {
       this.$emit("APP_DRAWER_TOGGLED");
     },
     signout() {
-      this.$store.dispatch('signout');
+      deleteCookie('token');
+      deleteCookie('CSRF-TOKEN');
+      deleteCookie('_csrf');
       this.$router.push('/signin');
     }
   }

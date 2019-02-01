@@ -17,7 +17,7 @@
                 </v-form>
               </v-card-text>
               <v-card-actions>
-                <v-btn block color="primary" @click="signin" :loading="loading">Sign in</v-btn>
+                <v-btn block color="primary" @click="signin" :loading="loading" :disabled="userId === ''">Sign in</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -28,22 +28,50 @@
 </template>
 
 <script>
-/* global localStorage */
 import config from "~/assets/js/config";
 import jwt from 'jwt-decode';
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(";");
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === " ") {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+}
+
+function deleteCookie(name) {
+  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+}
+
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+    let date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
 
 export default {
   layout: "public",
   data: () => ({
     loading: false,
     message: null,
-    userId: process.browser ? localStorage.getItem("userId") || "" : "",
+    userId: process.browser ? getCookie("userId") || "" : "",
     password: ""
   }),
   created() {
-    this.$axios.defaults.baseURL = config.apiServerHost;
+    //this.$axios.defaults.baseURL = config.apiServerHost;
     if (process.browser) {
-      const token = localStorage.getItem("accessToken");
+      const token = getCookie("token");
       if (token) {
         this.loading = true;
         this.$axios({
@@ -53,22 +81,17 @@ export default {
         })
           .then(response => {
             this.$axios({
-              url: "/check",
-              method: "GET",
-              headers: {"x-auth": response.data.token}
+              url: "/admin",
+              method: "GET"
             })
               .then(profile => {
                 this.loading = false;
-                localStorage.setItem("accessToken", response.data.token);
-                this.$axios.defaults.headers.common["x-auth"] = response.data.token;
-                this.$store.dispatch("signin", {
-                  accessToken: response.data.token,
-                  userId:jwt(response.data.token).userId
-                });
+                this.$store.dispatch("setUserId", jwt(response.data.token).userId);
                 this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || '/');
               })
               .catch(err => {
                 this.loading = false;
+                deleteCookie('token');
                 if(err.response){
                   this.message = err.response.data.message;
                   if (err.response.data.target && this.$refs[err.response.data.target]) {
@@ -89,7 +112,7 @@ export default {
             }else{
               this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
             }
-            localStorage.removeItem("accessToken");
+            deleteCookie('token');
           });
       }
     }
@@ -102,7 +125,7 @@ export default {
           this.message = "아이디와 비밀번호를 입력해주세요.";
           return false;
         }
-        localStorage.setItem("userId", this.userId);
+        setCookie("userId", this.userId, 30);
         this.message = null;
         this.loading = true;
         this.$axios
@@ -112,18 +135,12 @@ export default {
           })
           .then(response => {
             this.$axios({
-              url: "/check",
-              method: "GET",
-              headers: {"x-auth": response.data.token}
+              url: "/admin",
+              method: "GET"
             })
               .then(profile => {
                 this.loading = false;
-                localStorage.setItem("accessToken", response.data.token);
-                this.$axios.defaults.headers.common["x-auth"] = response.data.token;
-                this.$store.dispatch("signin", {
-                  accessToken: response.data.token,
-                  userId:jwt(response.data.token).userId
-                });
+                this.$store.dispatch("setUserId", jwt(response.data.token).userId);
                 this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || '/');
               })
               .catch(err => {

@@ -8,6 +8,7 @@
     "dev": "cross-env NUXT_HOST=0.0.0.0 NUXT_PORT=8081 nuxt",
     "build": "cross-env NUXT_HOST=0.0.0.0 NUXT_PORT=8081 nuxt build",
     "start": "cross-env NUXT_HOST=0.0.0.0 NUXT_PORT=8081 nuxt start",
+    "dev8082": "cross-env NUXT_HOST=0.0.0.0 NUXT_PORT=8082 nuxt",
     "generate": "nuxt generate"
   },
   "dependencies": {

@@ -18,7 +18,8 @@ module.exports = {
     {src:'~/plugins/vuetify'},
     {src:'~/plugins/veevalidate', ssr:false},
     {src:'~/plugins/moment'},
-    {src:'~/plugins/router', ssr:false}
+    {src:'~/plugins/router', ssr:false},
+    {src:'~/plugins/axios'}
   ],
   css: ['~/assets/style/app.styl'],
   /*
@@ -28,6 +29,13 @@ module.exports = {
   /*
   ** Build configuration
   */
+  axios:{
+    credentials:true,
+    https:true,
+    host:'node2-koru.c9users.io',
+    port:'8080',
+    browserBaseURL:'https://node2-koru.c9users.io:8080'//config.apiServerHost
+  },
   build: {
     extractCSS: true
   }
