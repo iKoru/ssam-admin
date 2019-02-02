@@ -19,6 +19,15 @@ if (isProd) {
   https
   .createServer(options, nuxt.render)
   .listen(port)
+  
+  // set up plain http server
+  const http = require('express').createServer()
+  
+  // set up a route to redirect http to https
+  http.all(function(req, res) {  
+    res.redirect('https://'+ process.env.ADMIN_DOMAIN);
+  })
+  http.listen(80);
   console.log(`Server listening on https://${process.env.ADMIN_DOMAIN}`)
 }else{
   new Builder(nuxt).build() // Build in development mode
