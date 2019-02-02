@@ -1,6 +1,6 @@
 const https = require('https')
 const fs = require('fs')
-const Nuxt = require('nuxt')
+const {Nuxt, Builder} = require('nuxt')
 const isProd = process.env.NODE_ENV === 'production'
 const port = process.env.ADMIN_PORT || 443
 
@@ -21,5 +21,5 @@ if (isProd) {
   .listen(port)
   console.log(`Server listening on https://${process.env.ADMIN_DOMAIN}`)
 }else{
-  nuxt.build() // Build in development mode
+  new Builder(nuxt).build() // Build in development mode
 }
