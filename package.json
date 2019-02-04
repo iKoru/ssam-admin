@@ -11,16 +11,15 @@
     "dev8082": "cross-env NUXT_HOST=0.0.0.0 NUXT_PORT=8082 nuxt",
     "generate": "nuxt generate"
   },
-  "config":{
-
-  "nuxt":{
-    "port":8081
-  }},
+  "config": {
+    "nuxt": {
+      "port": 8081
+    }
+  },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
-    "jwt-decode": "^2.2.0",
     "material-design-icons-iconfont": "^4.0.4",
     "moment": "^2.22.2",
     "nprogress": "^0.2.0",
