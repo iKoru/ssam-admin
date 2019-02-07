@@ -13,8 +13,8 @@
               <td>{{ props.item.popupId }}</td>
               <td class="text-xs-left">{{ popupTypeItems.some(x=>x.value === props.item.popupType)?popupTypeItems.find(x=>x.value === props.item.popupType).text : props.item.popupType }}</td>
               <td class="text-xs-left">{{ props.item.popupContents }}</td>
-              <td class="text-xs-left">{{ $moment(props.item.popupStart, 'YYYYMMDD').format('Y-M-D') }}</td>
-              <td class="text-xs-left">{{ $moment(props.item.popupEnd, 'YYYYMMDD').format('Y-M-D') }}</td>
+              <td class="text-xs-right">{{ $moment(props.item.popupStart, 'YYYYMMDD').format('Y-MM-DD') }}</td>
+              <td class="text-xs-right">{{ $moment(props.item.popupEnd, 'YYYYMMDD').format('Y-MM-DD') }}</td>
               <td class="justify-center align-center fill-height">
                 <v-checkbox name="popupActivated" v-model="props.item.popupActivated" readonly hide-details primary class="align-center justify-center"></v-checkbox>
               </td>
@@ -167,6 +167,8 @@ export default {
     editItem(item) {
       this.editedIndex = this.popups.map(x => x.popupId).indexOf(item.popupId);
       this.editedItem = Object.assign({}, item);
+      this.editedItem.popupStart = this.$moment(this.editedItem.popupStart, 'YYYYMMDD').format('Y-MM-DD');
+      this.editedItem.popupEnd = this.$moment(this.editedItem.popupEnd, 'YYYYMMDD').format('Y-MM-DD');
       this.dialog = true;
     },
 
