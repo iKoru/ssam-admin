@@ -29,7 +29,6 @@
 
 <script>
 import config from "~/assets/js/config";
-import jwt from 'jwt-decode';
 
 function getCookie(cname) {
   let name = cname + "=";
@@ -69,15 +68,13 @@ export default {
     password: ""
   }),
   created() {
-    //this.$axios.defaults.baseURL = config.apiServerHost;
     if (process.browser) {
-      const token = getCookie("token");
+      const token = this.$store.getters.userId
       if (token) {
         this.loading = true;
         this.$axios({
           method: "POST",
-          url: "/refresh",
-          headers: {"x-auth": token}
+          url: "/refresh"
         })
           .then(response => {
             this.$axios({
@@ -86,12 +83,12 @@ export default {
             })
               .then(profile => {
                 this.loading = false;
-                this.$store.dispatch("setUserId", jwt(response.data.token).userId);
+                this.$store.dispatch("setUserId", response.data.userId);
                 this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || '/');
               })
               .catch(err => {
                 this.loading = false;
-                deleteCookie('token');
+                this.$store.dispatch("setUserId", null);
                 if(err.response){
                   this.message = err.response.data.message;
                   if (err.response.data.target && this.$refs[err.response.data.target]) {
@@ -140,7 +137,7 @@ export default {
             })
               .then(profile => {
                 this.loading = false;
-                this.$store.dispatch("setUserId", jwt(response.data.token).userId);
+                this.$store.dispatch("setUserId", response.data.userId);
                 this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || '/');
               })
               .catch(err => {

@@ -32,9 +32,9 @@ module.exports = {
   axios:{
     credentials:true,
     https:true,
-    host:'node2-koru.c9users.io',
-    port:'8080',
-    browserBaseURL:'https://node2-koru.c9users.io:8080'//config.apiServerHost
+    host:process.env.NODE_ENV === 'development'?'node2-koru.c9users.io':'api.pedagy.com',
+    port:process.env.NODE_ENV === 'development'?'8080':'443',
+    browserBaseURL:process.env.NODE_ENV === 'development'?'https://node2-koru.c9users.io:8080':process.env.API_DOMAIN//config.apiServerHost
   },
   build: {
     extractCSS: true
