@@ -61,6 +61,13 @@ const Menu = [
     group: 'board',
     icon: 'pets',
     name: 'animal'
+  },
+  { header: '기타' },
+  {
+    title: '팝업 관리',
+    group: 'etc',
+    icon: 'announcement',
+    name: 'popup'
   }
 ];
 // reorder menu
