@@ -69,49 +69,46 @@ export default {
   }),
   created() {
     if (process.browser) {
-      const token = this.$store.getters.userId
-      if (token) {
-        this.loading = true;
-        this.$axios({
-          method: "POST",
-          url: "/refresh"
-        })
-          .then(response => {
-            this.$axios({
-              url: "/admin",
-              method: "GET"
-            })
-              .then(profile => {
-                this.loading = false;
-                this.$store.dispatch("setUserId", response.data.userId);
-                this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || '/');
-              })
-              .catch(err => {
-                this.loading = false;
-                this.$store.dispatch("setUserId", null);
-                if(err.response){
-                  this.message = err.response.data.message;
-                  if (err.response.data.target && this.$refs[err.response.data.target]) {
-                    this.$refs[err.response.data.target].focus();
-                  }
-                }else{
-                  this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
-                }
-              });
+      this.loading = true;
+      this.$axios({
+        method: "POST",
+        url: "/refresh"
+      })
+        .then(response => {
+          this.$axios({
+            url: "/admin",
+            method: "GET"
           })
-          .catch(err => {
-            this.loading = false;
-            if(err.response){
-              this.message = err.response.data.message;
-              if (err.response.data.target && this.$refs[err.response.data.target]) {
-                this.$refs[err.response.data.target].focus();
+            .then(profile => {
+              this.loading = false;
+              this.$store.dispatch("setUserId", response.data.userId);
+              this.$router.push(decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent('redirectTo').replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")) || '/');
+            })
+            .catch(err => {
+              this.loading = false;
+              this.$store.dispatch("setUserId", null);
+              if(err.response){
+                this.message = err.response.data.message;
+                if (err.response.data.target && this.$refs[err.response.data.target]) {
+                  this.$refs[err.response.data.target].focus();
+                }
+              }else{
+                this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
               }
-            }else{
-              this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
+            });
+        })
+        .catch(err => {
+          this.loading = false;
+          if(err.response){
+            this.message = err.response.data.message;
+            if (err.response.data.target && this.$refs[err.response.data.target]) {
+              this.$refs[err.response.data.target].focus();
             }
-            deleteCookie('token');
-          });
-      }
+          }else{
+            this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
+          }
+          deleteCookie('token');
+        });
     }
   },
 

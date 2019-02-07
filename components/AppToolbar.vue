@@ -32,7 +32,12 @@ export default {
       deleteCookie('token');
       deleteCookie('CSRF-TOKEN');
       deleteCookie('_csrf');
-      this.$router.push('/signin');
+      this.$axios.post('signout').then(() => {
+        this.$router.push('/signin');
+      })
+      .catch(error=>{
+        this.$router.app.$emit("showSnackbar", `로그아웃 하지 못했습니다.[${error.data.message}]`, "error");
+      })
     }
   }
 };
