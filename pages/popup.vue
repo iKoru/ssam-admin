@@ -38,16 +38,19 @@
                 <v-card-text>
                   <v-container grid-list-md>
                     <v-layout wrap>
+                      <v-flex xs12>
+                        <v-text-field name="popupId" v-model="editedItem.popupId" label="팝업ID" readonly placeholder="자동생성됩니다."></v-text-field>
+                      </v-flex>
                       <v-flex xs12 sm6>
                         <v-menu v-model="popupStart" :close-on-content-click="false" :nudge-right="40" lazy offset-y full-width min-width="290px">
                           <v-text-field slot="activator" v-model="editedItem.popupStart" label="팝업 게시 시작일" prepend-icon="event" readonly></v-text-field>
-                          <v-date-picker v-model="editedItem.popupStart" @input="popupStart = false"></v-date-picker>
+                          <v-date-picker v-model="editedItem.popupStart" :max="editedItem.popupEnd" @input="popupStart = false"></v-date-picker>
                         </v-menu>
                       </v-flex>
                       <v-flex xs12 sm6>
                         <v-menu v-model="popupEnd" :close-on-content-click="false" :nudge-right="40" lazy offset-y full-width min-width="290px">
                           <v-text-field slot="activator" v-model="editedItem.popupEnd" label="팝업 게시 종료일" prepend-icon="event" readonly></v-text-field>
-                          <v-date-picker v-model="editedItem.popupEnd" @input="popupEnd = false"></v-date-picker>
+                          <v-date-picker v-model="editedItem.popupEnd" :min="editedItem.popupStart" @input="popupEnd = false"></v-date-picker>
                         </v-menu>
                       </v-flex>
                       <v-flex xs12>
@@ -101,10 +104,8 @@ export default {
     editedItem: {
       popupId: null,
       popupType: "text",
-      popupStart: $moment().format("YMMDD"),
-      popupEnd: $moment()
-        .add(1, "months")
-        .format("YMMDD"),
+      popupStart: null,
+      popupEnd: null,
       popupActivated: true,
       popupHref: null,
       popupContents: ""
@@ -112,14 +113,14 @@ export default {
     defaultItem: {
       popupId: null,
       popupType: "text",
-      popupStart: $moment().format("YMMDD"),
-      popupEnd: $moment()
-        .add(1, "months")
-        .format("YMMDD"),
+      popupStart:null,
+      popupEnd:null,
       popupActivated: true,
       popupHref: null,
       popupContents: ""
     },
+    popupStart:false,
+    popupEnd:false,
     loading: true,
     noresult: "표시할 결과가 없습니다.",
     touching: null
@@ -139,6 +140,10 @@ export default {
 
   created: async function() {
     await this.getDataFromApi();
+    this.editedItem.popupStart = this.$moment().format("Y-MM-DD")
+    this.editedItem.popupEnd = this.$moment().add(1, "months").format("Y-MM-DD")
+    this.defaultItem.popupStart = this.$moment().format("Y-MM-DD")
+    this.defaultItem.popupEnd = this.$moment().add(1, "months").format("Y-MM-DD")
   },
 
   methods: {
@@ -205,7 +210,7 @@ export default {
         //update
         let response;
         try {
-          response = await this.$axios.put("/notification/popup", this.editedItem);
+          response = await this.$axios.put("/notification/popup", {...this.editedItem, popupStart:this.$moment(this.editedItem.popupStart, 'YYYY-MM-DD').format('YMMDD'), popupEnd:this.$moment(this.editedItem.popupEnd, 'YYYY-MM-DD').format('YMMDD')});
         } catch (err) {
           if (err.response) {
             this.$router.app.$emit("showSnackbar", `팝업정보를 수정하지 못했습니다.[${err.response.data.message}]`, "error");
@@ -221,7 +226,7 @@ export default {
         //create
         let response;
         try {
-          response = await this.$axios.post("/notification/popup", this.editedItem);
+          response = await this.$axios.post("/notification/popup", {...this.editedItem, popupStart:this.$moment(this.editedItem.popupStart, 'YYYY-MM-DD').format('YMMDD'), popupEnd:this.$moment(this.editedItem.popupEnd, 'YYYY-MM-DD').format('YMMDD')});
         } catch (err) {
           if (err.response) {
             this.$router.app.$emit("showSnackbar", `팝업을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
