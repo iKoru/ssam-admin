@@ -1,6 +1,7 @@
 module.exports = {
   modules: [
     '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
   head: {
     titleTemplate: '%s - Pedagy Admin',
@@ -19,7 +20,7 @@ module.exports = {
     {src:'~/plugins/veevalidate', ssr:false},
     {src:'~/plugins/moment'},
     {src:'~/plugins/router', ssr:false},
-    {src:'~/plugins/axios'}
+    '~/plugins/axios'
   ],
   css: ['~/assets/style/app.styl'],
   /*
@@ -31,10 +32,17 @@ module.exports = {
   */
   axios:{
     credentials:true,
-    https:true,
-    host:process.env.NODE_ENV === 'development'?'node2-koru.c9users.io':'api.pedagy.com',
-    port:process.env.NODE_ENV === 'development'?'8080':'443',
-    browserBaseURL:process.env.NODE_ENV === 'development'?'https://node2-koru.c9users.io:8080':process.env.API_DOMAIN//config.apiServerHost
+    proxy:true,
+    proxyHeaders:false,
+    prefix:'/api'
+    //https:true,
+    //host:process.env.NODE_ENV === 'development'?'node2-koru.c9users.io':'api.pedagy.com',
+    //port:process.env.NODE_ENV === 'development'?'8080':'443',
+    //crossDomain:true,
+    //browserBaseURL:process.env.NODE_ENV === 'development'?'https://node2-koru.c9users.io:8080':process.env.API_DOMAIN//config.apiServerHost
+  },
+  proxy: {
+    '/api/': { target: process.env.NODE_ENV === 'development'?'https://node2-koru.c9users.io:8080':process.env.API_DOMAIN, pathRewrite: {'^/api/': ''} }
   },
   build: {
     extractCSS: true
