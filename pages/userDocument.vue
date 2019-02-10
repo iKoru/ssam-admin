@@ -37,6 +37,7 @@
                   </td>
                   <td class="text-xs-left">{{ props.item.isDeleted?'삭제됨':'정상' }}</td>
                   <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
+                  <td class="text-xs-right"><v-btn class="px-0 ma-0" small color="error" @click="deleteDocument(props.item)">삭제</v-btn></td>
                 </tr>
               </template>
               <template slot="no-data">
@@ -72,6 +73,7 @@
                   </td>
                   <td class="text-xs-left">{{ props.item.isDeleted?'삭제됨':'정상' }}</td>
                   <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
+                  <td class="text-xs-right"><v-btn class="px-0 ma-0" small color="error" @click="deleteComment(props.item)">삭제</v-btn></td>
                 </tr>
               </template>
               <template slot="no-data">
@@ -91,8 +93,8 @@ import config from "~/assets/js/config";
 export default {
   data: () => ({
     dialog: false,
-    headers: [{text: "게시판 이름", align: "left", sortable: false, value: "boardId"}, {text: "게시물ID", sortable: false, align: "left", value: "documentId"}, {text: "게시물 제목", sortable: false, align: "left", value: "title"}, {text: "상태", sortable: false, align: "left", value: "status"}, {text: "작성일자", sortable: false, align: "right", value: "writeDateTime"}],
-    commentHeaders: [{text: "게시판 이름", align: "left", sortable: false, value: "boardId"}, {text: "댓글ID", sortable: false, align: "left", value: "commentId"}, {text: "댓글내용", sortable: false, align: "left", value: "title"}, {text: "상태", sortable: false, align: "left", value: "status"}, {text: "작성일자", sortable: false, align: "right", value: "writeDateTime"}],
+    headers: [{text: "게시판 이름", align: "left", sortable: false, value: "boardId"}, {text: "게시물ID", sortable: false, align: "left", value: "documentId"}, {text: "게시물 제목", sortable: false, align: "left", value: "title"}, {text: "상태", sortable: false, align: "left", value: "status"}, {text: "작성일자", sortable: false, align: "right", value: "writeDateTime"}, {text:'', sortable:false, align:'right'}],
+    commentHeaders: [{text: "게시판 이름", align: "left", sortable: false, value: "boardId"}, {text: "댓글ID", sortable: false, align: "left", value: "commentId"}, {text: "댓글내용", sortable: false, align: "left", value: "title"}, {text: "상태", sortable: false, align: "left", value: "status"}, {text: "작성일자", sortable: false, align: "right", value: "writeDateTime"}, {text:'', sortable:false, align:'right'}],
     userDocuments: [],
     userComments: [],
     totalUserDocuments: 0,
@@ -195,6 +197,38 @@ export default {
       this.userComments = response.data;
       this.totalUserComments = response.data.length > 0 ? response.data[0].totalCount : 0;
       this.loading = false;
+    },
+    async deleteDocument(docu){
+      if(confirm('이 글을 영구적으로 삭제하시겠습니까? 복원이 불가능하므로 신중히 판단하시기 바랍니다.')){
+        let response;
+        try{
+          response = await this.$axios.delete('/document/'+docu.documentId)
+        }catch(err){
+          console.log(err);
+          if(err.response.status!== 200){
+            this.$router.app.$emit('showSnackbar', `글을 영구삭제 하지 못했습니다.[${err.response.data? err.response.data.message : ''}]`, 'error');
+          }
+          return;
+        }
+        this.$router.app.$emit('showSnackbar', '글을 영구적으로 삭제하였습니다.', 'success')
+        this.getDataFromApi();
+      }
+    },
+    async deleteComment(comment){
+      if(confirm('이 댓글을 영구적으로 삭제하시겠습니까? 복원이 불가능하므로 신중히 판단하시기 바랍니다.')){
+        let response;
+        try{
+          response = await this.$axios.delete('/comment/'+comment.commentId)
+        }catch(err){
+          console.log(err);
+          if(err.response.status!== 200){
+            this.$router.app.$emit('showSnackbar', `댓글을 영구삭제 하지 못했습니다.[${err.response.data? err.response.data.message : ''}]`, 'error');
+          }
+          return;
+        }
+        this.$router.app.$emit('showSnackbar', '댓글을 영구적으로 삭제하였습니다.', 'success')
+        this.getDataFromCommentsApi();
+      }
     }
   },
   layout: "main",
