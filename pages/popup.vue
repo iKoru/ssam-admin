@@ -53,14 +53,15 @@
                           <v-date-picker v-model="editedItem.popupEnd" :min="editedItem.popupStart" @input="popupEnd = false"></v-date-picker>
                         </v-menu>
                       </v-flex>
-                      <v-flex xs12>
-                        <v-textarea name="popupContents" v-model="editedItem.popupContents" label="팝업 내용" placeholder="팝업의 내용. 이미지 타입일 경우 이미지 URL, HTML 타입일 경우 HTML, 텍스트 타입일 경우 텍스트"></v-textarea>
-                      </v-flex>
                       <v-flex xs12 sm6>
-                        <v-select name="popupType" v-model="editedItem.popupType" :items="popupTypeItems" label="팝업 종류"></v-select>
+                        <v-select name="popupType" v-model="editedItem.popupType" :items="popupTypeItems" label="팝업 종류" :readonly="formTitle !== '팝업 생성'"></v-select>
                       </v-flex>
                       <v-flex xs12 sm6>
                         <v-text-field name="popupHref" v-model="editedItem.popupHref" label="팝업 링크" placeholder="이미지를 눌렀을 때 이동할 URL. 이미지 타입일 경우에만 활용됨"></v-text-field>
+                      </v-flex>
+                      <v-flex xs12>
+                        <v-textarea v-if="(editedItem.popupType !== 'image') || (formTitle !== '팝업 생성')" name="popupContents" v-model="editedItem.popupContents" label="팝업 내용" placeholder="팝업의 내용. 이미지 타입일 경우 이미지 URL, HTML 타입일 경우 HTML, 텍스트 타입일 경우 텍스트" :readonly="formTitle !== '팝업 생성' && editedItem.popupType === 'image'"></v-textarea>
+                        <input v-else ref="fileInput" id="file-upload" accept="image/*" type="file" @click="$refs.fileInput.value = null" value="" @change="onFileChange" capture="filesystem">
                       </v-flex>
                       <v-flex xs12>
                         <v-checkbox name="popupActivated" v-model="editedItem.popupActivated" label="팝업 활성화 여부"></v-checkbox>
@@ -122,6 +123,9 @@ export default {
     popupStart:false,
     popupEnd:false,
     loading: true,
+    rawFileData:null,
+    formData:null,
+    attachedFilenames: [], // for easy check
     noresult: "표시할 결과가 없습니다.",
     touching: null
   }),
@@ -155,7 +159,7 @@ export default {
       } catch (err) {
         this.loading = false;
         if (err.response) {
-          this.$router.app.$emit("showSnackbar", `팝업 리스트를 불러오지 못했습니다.[${popups.data.message}]`, "error");
+          this.$router.app.$emit("showSnackbar", `팝업 리스트를 불러오지 못했습니다.[${err.response.data.message}]`, "error");
         } else {
           this.$router.app.$emit("showSnackbar", "서버가 구동중이지 않거나 인터넷 연결이 끊어졌습니다.", "error");
         }
@@ -206,7 +210,44 @@ export default {
         this.editedIndex = -1;
       }, 300);
     },
-
+    async onFileChange (e) {
+      if (!this.rawFileData) this.rawFileData = new FormData();
+      var self = this;
+      var files = e.target.files || e.dataTransfer.files;
+      console.log(files);
+      if (files.length > 0) {
+        for (var i = 0; i < files.length; i++) {
+          if (files[i].size > 1024 * 1024 * 8) {
+            this.$router.app.$emit('showSnackbar', '8MB 이하의 파일만 첨부가능합니다.', 'error')
+            break;
+          }
+          await self.rawFileData.append('file', files[i], files[i].name);
+          await self.attachedFilenames.push(files[i].name)
+          // keep delete -> attach case
+        }
+      }
+    },
+    processUploadFiles () {
+      if (!this.rawFileData) this.rawFileData = new FormData()
+      let namesCount = {}
+      for (let pair of this.rawFileData.entries()) {
+        namesCount[pair[1].name] = {
+          count: namesCount[pair[1].name] ? (namesCount[pair[1].name].count + 1) : 1,
+          index: 0
+        }
+      }
+      for (let pair of this.rawFileData.entries()) {
+        let splitter = pair[1].name.lastIndexOf('.')
+        let fileExtension = pair[1].name.substring(splitter, pair[1].name.length)
+        let filename = pair[1].name.substring(0, splitter)
+        let suffix = ''
+        if (namesCount[pair[1].name].count > 0) {
+          suffix = namesCount[pair[1].name].index === 0 ? '' : ` (${namesCount[pair[1].name].index})`
+          namesCount[pair[1].name].index += 1
+        }
+        this.formData.append('attach', pair[1], filename + suffix + fileExtension)
+      }
+    },
     save: async function() {
       if (this.editedIndex > -1) {
         //update
@@ -226,9 +267,24 @@ export default {
         this.$router.app.$emit("showSnackbar", "팝업 정보를 수정하였습니다.", "success");
       } else {
         //create
+        this.formData = new FormData();
+        if(this.editedItem.popupType === 'image'){
+          this.processUploadFiles()
+          if(!this.formData.get('attach')){
+            this.$router.app.$emit('showSnackbar', '올릴 이미지를 선택해주세요.', 'error')
+            return;
+          }
+        }
+        this.formData.append('popupType', this.editedItem.popupType);
+        this.formData.append('popupActivated', this.editedItem.popupActivated);
+        this.formData.append('popupStart', this.$moment(this.editedItem.popupStart, 'YYYY-MM-DD').format('YMMDD'));
+        this.formData.append('popupEnd', this.$moment(this.editedItem.popupEnd, 'YYYY-MM-DD').format('YMMDD'));
+        this.formData.append('popupContents', this.editedItem.popupType === 'image'?null:this.editedItem.popupContents)
+        this.formData.append('popupHref', this.editedItem.popupHref)
+        
         let response;
         try {
-          response = await this.$axios.post("/notification/popup", {...this.editedItem, popupStart:this.$moment(this.editedItem.popupStart, 'YYYY-MM-DD').format('YMMDD'), popupEnd:this.$moment(this.editedItem.popupEnd, 'YYYY-MM-DD').format('YMMDD')});
+          response = await this.$axios.post("/notification/popup", this.formData);
         } catch (err) {
           if (err.response) {
             this.$router.app.$emit("showSnackbar", `팝업을 추가하지 못했습니다.[${err.response.data.message}]`, "error");
