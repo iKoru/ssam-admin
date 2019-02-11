@@ -20,12 +20,12 @@ export default function ({ $axios, redirect }) {
   $axios.defaults.baseUrl = config.apiServerHost;
   $axios.defaults.withCredentials = true;
   $axios.defaults.xsrfCookieName = 'CSRF-TOKEN';
-  $axios.defaults.xsrfHeaderName = 'CSRF-TOKEN';
+  //$axios.defaults.xsrfHeaderName = 'CSRF-TOKEN';
   $axios.defaults.crossDomain = true;
 
   $axios.interceptors.request.use(
     function (config) {
-      config.headers['CSRF-TOKEN'] = getCookie('CSRF-TOKEN')
+      //config.headers['CSRF-TOKEN'] = getCookie('CSRF-TOKEN')
       console.log('request config : ', config)
       return config
     },
