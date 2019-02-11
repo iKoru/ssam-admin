@@ -26,6 +26,7 @@ export default function ({ $axios, redirect }) {
   $axios.interceptors.request.use(
     function (config) {
       config.headers['CSRF-TOKEN'] = getCookie('CSRF-TOKEN')
+      console.log('request config : ', config)
       return config
     },
     function (error) {

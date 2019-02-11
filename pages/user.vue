@@ -258,10 +258,6 @@ export default {
     this.groupItems = this.groupItems.map(x => (x.groupName ? {text: x.groupName, value: x.groupId} : x));
   },
 
-  mounted: function() {
-    this.getDataFromApi();
-  },
-
   methods: {
     getDataFromApi: async function() {
       this.loading = true;

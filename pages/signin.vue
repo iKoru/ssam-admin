@@ -100,9 +100,11 @@ export default {
         .catch(err => {
           this.loading = false;
           if(err.response){
-            this.message = err.response.data.message;
-            if (err.response.data.target && this.$refs[err.response.data.target]) {
-              this.$refs[err.response.data.target].focus();
+            if(err.response.data.message !== '로그인 정보가 없습니다.'){
+              this.message = err.response.data.message;
+              if (err.response.data.target && this.$refs[err.response.data.target]) {
+                this.$refs[err.response.data.target].focus();
+              }
             }
           }else{
             this.message = '서버 접속에 실패하였습니다. 서버가 구동중이지 않거나 인터넷 연결이 끊어졌을 수 있습니다.';
