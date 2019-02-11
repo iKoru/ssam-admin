@@ -17,7 +17,7 @@ function getCookie (cname) {
 }
 
 export default function ({ $axios, redirect }) {
-  $axios.defaults.baseUrl = 'https://node2-koru.c9users.io:8080';//config.apiServerHost;
+  $axios.defaults.baseUrl = config.apiServerHost;
   $axios.defaults.withCredentials = true;
   $axios.defaults.xsrfCookieName = 'CSRF-TOKEN';
   $axios.defaults.xsrfHeaderName = 'CSRF-TOKEN';
