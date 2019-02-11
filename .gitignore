@@ -13,3 +13,6 @@ dist
 assets/js/config.js
 
 yarn-error.log
+
+nuxt.config.js
+
