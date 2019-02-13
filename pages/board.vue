@@ -345,6 +345,7 @@ export default {
       this.editedIndex = this.boards.map(x => x.boardId).indexOf(item.boardId);
       this.editedItem = Object.assign({}, item);
       this.editedItem.groups = this.editedItem.allowedGroups.map(x=>x);
+      this.editedItem.categories = this.editedItem.categories.map(x=>x);
       if (this.editedItem.reservedDate) {
         this.editedItem.reservedDate = this.$moment(this.editedItem.reservedDate, "YYYYMMDD").format("Y-MM-DD");
       }
@@ -382,6 +383,8 @@ export default {
       this.dialog = false;
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedItem.groups = this.editedItem.allowedGroups.map(x=>x);
+        this.editedItem.categories = this.editedItem.categories.map(x=>x);
         this.editedIndex = -1;
       }, 300);
     },
