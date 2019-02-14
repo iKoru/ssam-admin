@@ -85,7 +85,7 @@
                         <v-text-field name="recentOrder" v-model="editedItem.recentOrder" label="메인 최근글 노출순서" type="number" placeholder="미입력시 노출 안함"></v-text-field>
                       </v-flex>
                       <v-flex xs12>
-                        <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.groups" :items="groupItems" label="구독(글쓰기)허용 그룹">
+                        <v-autocomplete name="allowedGroups" chips multiple item-text="text" item-value="value" v-model="editedItem.groups" :items="groupItems" label="구독(글쓰기)허용 그룹" placeholder="토픽인 경우 구독조건, 라운지(전체읽기허용)의 경우 글쓰기조건, 이외는 의미없음">
                           <template slot="selection" slot-scope="props">
                             <v-chip close small :key="props.item.value" :selected="props.selected" @input="removeChip(props, props.item, editedItem.allowedGroups)">{{props.item.text}}</v-chip>
                           </template>
@@ -346,6 +346,9 @@ export default {
       this.editedItem = Object.assign({}, item);
       this.editedItem.groups = this.editedItem.allowedGroups.map(x=>x);
       this.editedItem.categories = this.editedItem.categories.map(x=>x);
+      this.editedItem.statusAuth.read = this.editedItem.statusAuth.read.map(x=>x);
+      this.editedItem.statusAuth.write = this.editedItem.statusAuth.write.map(x=>x);
+      this.editedItem.statusAuth.comment = this.editedItem.statusAuth.comment.map(x=>x);
       if (this.editedItem.reservedDate) {
         this.editedItem.reservedDate = this.$moment(this.editedItem.reservedDate, "YYYYMMDD").format("Y-MM-DD");
       }
@@ -385,6 +388,9 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedItem.groups = this.editedItem.allowedGroups.map(x=>x);
         this.editedItem.categories = this.editedItem.categories.map(x=>x);
+        this.editedItem.statusAuth.read = this.editedItem.statusAuth.read.map(x=>x);
+        this.editedItem.statusAuth.write = this.editedItem.statusAuth.write.map(x=>x);
+        this.editedItem.statusAuth.comment = this.editedItem.statusAuth.comment.map(x=>x);
         this.editedIndex = -1;
       }, 300);
     },
