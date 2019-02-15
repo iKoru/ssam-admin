@@ -8,17 +8,13 @@
   </v-toolbar>
 </template>
 <script>
-
 function deleteCookie(name) {
   document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 }
 
 export default {
   name: "app-toolbar",
-  components: {},
-  props:['nickName'],
-  data: () => ({
-  }),
+  props: ["nickName"],
   computed: {
     toolbarColor() {
       return this.$vuetify.options.extra.mainNav;
@@ -29,15 +25,17 @@ export default {
       this.$emit("APP_DRAWER_TOGGLED");
     },
     signout() {
-      deleteCookie('token');
-      deleteCookie('CSRF-TOKEN');
-      deleteCookie('_csrf');
-      this.$axios.post('signout').then(() => {
-        this.$router.push('/signin');
-      })
-      .catch(error=>{
-        this.$router.app.$emit("showSnackbar", `로그아웃 하지 못했습니다.[${error.data.message}]`, "error");
-      })
+      deleteCookie("token");
+      deleteCookie("CSRF-TOKEN");
+      deleteCookie("_csrf");
+      this.$axios
+        .post("signout")
+        .then(() => {
+          this.$router.push("/signin");
+        })
+        .catch(error => {
+          this.$router.app.$emit("showSnackbar", `로그아웃 하지 못했습니다.[${error.data.message}]`, "error");
+        });
     }
   }
 };
