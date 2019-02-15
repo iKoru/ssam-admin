@@ -211,6 +211,7 @@ export default {
     addChips(candidate) {
       if (typeof candidate === "string") {
         candidate.split(",").forEach(x => {
+          x = x.trim();
           if (x !== "") {
             if (this.editedItem.animalNamesSet.has(x) || this.animals.some(y => y.animalName === x)) {
               this.$router.app.$emit("showSnackbar", `${x} : 이미 (임시로) 입력된 동물명입니다.`, "error");
