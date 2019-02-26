@@ -12,7 +12,7 @@
           </v-layout>
         </v-form>
 
-        <v-data-table v-model="selected" select-all :headers="headers" item-key="animalName" :items="animals" id="animalTable" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination">
+        <v-data-table v-model="selected" select-all :headers="headers" item-key="animalName" :items="animals" class="w-100 custom-action" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination">
           <template slot="headers" slot-scope="props">
             <tr>
               <th>
@@ -241,13 +241,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#animalTable {
-  width: 100%;
-
-  .v-datatable__actions {
-    justify-content: space-between;
-  }
-}
-</style>

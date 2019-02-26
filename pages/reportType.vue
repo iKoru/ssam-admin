@@ -12,9 +12,9 @@
           </v-layout>
         </v-form>
 
-        <v-data-table :headers="headers" :items="reportTypes" id="reportTypeTable" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination">
+        <v-data-table :headers="headers" :items="reportTypes" class="w-100 custom-action" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination">
           <template slot="items" slot-scope="props">
-            <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
+            <tr @click="editItem(props.item)">
               <td>{{ props.item.reportTypeId }}</td>
               <td class="text-xs-left">{{ props.item.reportTypeName }}</td>
               <td class="text-xs-left">{{ props.item.reportTypeDescription }}</td>
@@ -94,8 +94,7 @@ export default {
     loading: true,
     pagination: {rowsPerPage: 10},
     noresult: "표시할 결과가 없습니다.",
-    search: null,
-    touching: null
+    search: null
   }),
 
   computed: {
@@ -208,14 +207,6 @@ export default {
         this.$router.app.$emit("showSnackbar", `${this.editedItem.reportTypeName} 신고종류을 추가하였습니다.`, "success");
       }
       this.close();
-    },
-    touchStart(item){
-      this.touching = item.boardId;
-    },
-    touchEnd(item){
-      if(this.touching === item.boardId){
-        this.editItem(item);
-      }
     }
   },
   layout: "main",
@@ -226,13 +217,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#reportTypeTable {
-  width: 100%;
-
-  .v-datatable__actions {
-    justify-content: space-between;
-  }
-}
-</style>

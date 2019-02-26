@@ -22,9 +22,9 @@
           </v-layout>
         </v-form>
 
-        <v-data-table :headers="headers" :items="users" id="userTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUsers" :pagination.sync="pagination" :no-data-text="noresult">
+        <v-data-table :headers="headers" :items="users" class="w-100 custom-action" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUsers" :pagination.sync="pagination" :no-data-text="noresult">
           <template slot="items" slot-scope="props">
-            <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
+            <tr @click="editItem(props.item)">
               <td>{{ props.item.userId }}</td>
               <td class="text-xs-left">{{ props.item.loungeNickName }}</td>
               <td class="text-xs-left">{{ props.item.topicNickName }}</td>
@@ -186,7 +186,6 @@ export default {
     searchGroup: null,
     searchTarget: "userId",
     searchStatus: null,
-    touching: null,
     noresult: "표시할 결과가 없습니다."
   }),
 
@@ -396,14 +395,6 @@ export default {
     removeChip(props, item) {
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
       this.editedItem.groups.splice(this.editedItem.groups.indexOf(item.value), 1);
-    },
-    touchStart(item) {
-      this.touching = item.boardId;
-    },
-    touchEnd(item) {
-      if (this.touching === item.boardId) {
-        this.editItem(item);
-      }
     }
   },
   layout: "main",
@@ -414,13 +405,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#userTable {
-  width: 100%;
-
-  .v-datatable__actions {
-    justify-content: space-between;
-  }
-}
-</style>

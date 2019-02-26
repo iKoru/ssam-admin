@@ -2,7 +2,7 @@
   <div id="pageReport">
     <v-container grid-list-xl fluid>
       <v-layout row wrap class="elevation-1 mb-5" white>
-        <v-tabs color="secondary" dark icons-and-text id="reportTabs" v-model="selectedTab">
+        <v-tabs color="secondary" dark icons-and-text class="w-100" v-model="selectedTab">
           <v-tabs-slider color="accent"></v-tabs-slider>
           <v-tab href="#documentReport">게시물
             <v-icon>description</v-icon>
@@ -31,7 +31,7 @@
               </v-layout>
             </v-form>
 
-            <v-data-table :headers="headers" :items="documentReports" id="documentReportTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalDocumentReports" :pagination.sync="pagination" :no-data-text="noresult">
+            <v-data-table :headers="headers" :items="documentReports" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalDocumentReports" :pagination.sync="pagination" :no-data-text="noresult">
               <template slot="items" slot-scope="props">
                 <tr>
                   <td class="text-xs-left">{{ props.item.documentId }}</td>
@@ -82,7 +82,7 @@
               </v-layout>
             </v-form>
 
-            <v-data-table :headers="commentHeaders" :items="commentReports" id="commentReportTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalCommentReports" :pagination.sync="commentsPagination" :no-data-text="noresult">
+            <v-data-table :headers="commentHeaders" :items="commentReports" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalCommentReports" :pagination.sync="commentsPagination" :no-data-text="noresult">
               <template slot="items" slot-scope="props">
                 <tr>
                   <td class="text-xs-left">{{ props.item.commentId }}</td>
@@ -431,15 +431,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#reportTabs, #documentReportTable, #commentReportTable {
-  width: 100%;
-}
-
-.ellipsis {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-</style>

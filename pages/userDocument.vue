@@ -2,7 +2,7 @@
   <div id="pageUserDocument">
     <v-container grid-list-xl fluid>
       <v-layout row wrap class="elevation-1 mb-5" white>
-        <v-tabs color="secondary" dark icons-and-text id="userDocumentTabs" v-model="selectedTab">
+        <v-tabs color="secondary" dark icons-and-text class="w-100" v-model="selectedTab">
           <v-tabs-slider color="accent"></v-tabs-slider>
           <v-tab href="#userDocument">게시물
             <v-icon>description</v-icon>
@@ -27,7 +27,7 @@
               </v-layout>
             </v-form>
 
-            <v-data-table :headers="headers" :items="userDocuments" id="userDocumentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserDocuments" :pagination.sync="pagination" :no-data-text="noresult">
+            <v-data-table :headers="headers" :items="userDocuments" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserDocuments" :pagination.sync="pagination" :no-data-text="noresult">
               <template slot="items" slot-scope="props">
                 <tr>
                   <td class="text-xs-left">{{ boardItems.find(x=>x.value === props.item.boardId).text }}</td>
@@ -63,7 +63,7 @@
               </v-layout>
             </v-form>
 
-            <v-data-table :headers="commentHeaders" :items="userComments" id="userCommentTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="commentsPagination" :no-data-text="noresult">
+            <v-data-table :headers="commentHeaders" :items="userComments" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="commentsPagination" :no-data-text="noresult">
               <template slot="items" slot-scope="props">
                 <tr>
                   <td class="text-xs-left">{{ boardItems.find(x=>x.value === props.item.boardId).text }}</td>
@@ -239,15 +239,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#userDocumentTabs, #userDocumentTable, #userCommentTable {
-  width: 100%;
-}
-
-.ellipsis {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-</style>

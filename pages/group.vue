@@ -18,9 +18,9 @@
           </v-layout>
         </v-form>
 
-        <v-data-table :headers="headers" :items="groups" id="groupTable" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination" :custom-filter="customFilter">
+        <v-data-table :headers="headers" :items="groups" class="w-100 custom-action" :search="search" :loading="loading" :no-data-text="noresult" :pagination.sync="pagination" :custom-filter="customFilter">
           <template slot="items" slot-scope="props">
-            <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
+            <tr @click="editItem(props.item)">
               <td>{{ props.item.groupId }}</td>
               <td class="text-xs-left">{{ props.item.groupName }}</td>
               <td class="text-xs-left">{{ groupTypeItems.find(x=>x.value === props.item.groupType)? groupTypeItems.find(x=>x.value === props.item.groupType).text : props.item.groupType }}</td>
@@ -66,9 +66,6 @@
                       <v-flex xs12>
                         <v-checkbox name="isOpenToUsers" v-model="editedItem.isOpenToUsers" label="공개 여부" hint="지역,전공,학년인 경우 유저가 토픽 권한 설정 시 / 3월에 정보변경 시 보여집니다."></v-checkbox>
                       </v-flex>
-                      <!--<v-flex xs12 sm6>-->
-                      <!--  <v-text-field name="groupIconPath" v-model="editedItem.groupIconPath" label="그룹아이콘 경로"></v-text-field>-->
-                      <!--</v-flex>-->
                       <v-flex xs12>
                         <v-textarea name="groupDescription" v-model="editedItem.groupDescription" label="그룹 설명" maxlength="500" placeholder="유저에게 공개 시 함께 보여집니다." hint="유저에게 공개 시 함께 보여집니다."></v-textarea>
                       </v-flex>
@@ -137,7 +134,6 @@ export default {
     searchTargetItems: [{text: "그룹이름", value: "groupName"}, {text: "그룹종류", value: "groupType"}],
     noresult: "표시할 결과가 없습니다.",
     search: null,
-    touching: null,
     customFilter: function(items, search, filter) {
       const searchTarget = search && typeof search !== "boolean" ? search.toString().toLowerCase() : search;
       return this.$parent.searchTarget !== "groupType"
@@ -171,10 +167,6 @@ export default {
   created: async function() {
     await this.getDataFromApi();
   },
-
-  /*mounted: function() {
-    this.getDataFromApi();
-  },*/
 
   methods: {
     getDataFromApi: async function() {
@@ -279,14 +271,6 @@ export default {
         this.$router.app.$emit("showSnackbar", `${this.editedItem.groupName} 그룹을 추가하였습니다.`, "success");
       }
       this.close();
-    },
-    touchStart(item) {
-      this.touching = item.boardId;
-    },
-    touchEnd(item) {
-      if (this.touching === item.boardId) {
-        this.editItem(item);
-      }
     }
   },
   layout: "main",
@@ -297,13 +281,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#groupTable {
-  width: 100%;
-
-  .v-datatable__actions {
-    justify-content: space-between;
-  }
-}
-</style>

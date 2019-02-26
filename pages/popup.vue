@@ -7,9 +7,9 @@
           <v-spacer></v-spacer>
         </v-toolbar>
 
-        <v-data-table :headers="headers" :items="popups" id="popupTable" :loading="loading" :no-data-text="noresult">
+        <v-data-table :headers="headers" :items="popups" class="w-100 custom-action" :loading="loading" :no-data-text="noresult">
           <template slot="items" slot-scope="props">
-            <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
+            <tr @click="editItem(props.item)">
               <td>{{ props.item.popupId }}</td>
               <td class="text-xs-left">{{ popupTypeItems.some(x=>x.value === props.item.popupType)?popupTypeItems.find(x=>x.value === props.item.popupType).text : props.item.popupType }}</td>
               <td class="text-xs-left">{{ props.item.popupContents }}</td>
@@ -126,8 +126,7 @@ export default {
     rawFileData:null,
     formData:null,
     attachedFilenames: [], // for easy check
-    noresult: "표시할 결과가 없습니다.",
-    touching: null
+    noresult: "표시할 결과가 없습니다."
   }),
 
   computed: {
@@ -298,14 +297,6 @@ export default {
         this.$router.app.$emit("showSnackbar", "팝업을 추가하였습니다.", "success");
       }
       this.close();
-    },
-    touchStart(item) {
-      this.touching = item.boardId;
-    },
-    touchEnd(item) {
-      if (this.touching === item.boardId) {
-        this.editItem(item);
-      }
     }
   },
   layout: "main",
@@ -316,13 +307,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#popupTable {
-  width: 100%;
-
-  .v-datatable__actions {
-    justify-content: space-between;
-  }
-}
-</style>

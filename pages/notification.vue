@@ -2,7 +2,7 @@
   <div id="pageNotification">
     <v-container grid-list-xl fluid>
       <v-layout row wrap class white>
-        <v-card id="notificationCard" class="mb-5">
+        <v-card id="notificationCard" class="mb-5 w-100">
           <v-card-title>
             <span class="headline">회원 알림 관리(전체 알림 생성)</span>
             <v-spacer></v-spacer>
@@ -113,9 +113,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#pageNotification .v-card {
-  width: 100%;
-}
-</style>

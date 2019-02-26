@@ -21,9 +21,9 @@
           </v-layout>
         </v-form>
 
-        <v-data-table :headers="headers" :items="boards" id="boardTable" :loading="loading" :no-data-text="noresult">
+        <v-data-table :headers="headers" :items="boards" class="w-100 custom-action" :loading="loading" :no-data-text="noresult">
           <template slot="items" slot-scope="props">
-            <tr @dblclick="editItem(props.item)" v-touch="{start: () => touchStart(props.item), end: () => touchEnd(props.item)}">
+            <tr @click="editItem(props.item)">
               <td>{{ props.item.boardId }}</td>
               <td class="text-xs-left">{{ props.item.boardName }}</td>
               <td class="text-xs-left">{{ boards.some(x=>x.boardId === props.item.parentBoardId)?boards.find(x=>x.boardId === props.item.parentBoardId).boardName : (props.item.parentBoardId?'(삭제된 게시판)':'') }}</td>
@@ -242,7 +242,6 @@ export default {
     searchTarget: "boardId",
     searchStatus: null,
     searchType: null,
-    touching: null,
     candidate: null,
     noresult: "표시할 결과가 없습니다."
   }),
@@ -462,14 +461,6 @@ export default {
       props.parent.selectedItems.splice(props.parent.selectedItems.indexOf(item.value), 1);
       list.splice(list.indexOf(item.value), 1);
     },
-    touchStart(item) {
-      this.touching = item.boardId;
-    },
-    touchEnd(item) {
-      if (this.touching === item.boardId) {
-        this.editItem(item);
-      }
-    },
     addCategoryChips(candidate) {
       if (typeof candidate === "string") {
         this.editedItem.updatedCategory = true;
@@ -498,13 +489,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#boardTable {
-  width: 100%;
-
-  .v-datatable__actions {
-    justify-content: space-between;
-  }
-}
-</style>

@@ -20,7 +20,7 @@
           </v-layout>
         </v-form>
 
-        <v-data-table :headers="headers" :items="sanctions" id="sanctionTable" :rows-per-page-items="[15]" :loading="loading" :total-items="totalSanctions" :pagination.sync="pagination" :no-data-text="noresult">
+        <v-data-table :headers="headers" :items="sanctions" class="w-100 custom-action" :rows-per-page-items="[15]" :loading="loading" :total-items="totalSanctions" :pagination.sync="pagination" :no-data-text="noresult">
           <template slot="items" slot-scope="props">
             <tr>
               <td class="text-xs-left">{{ props.item.userId }}</td>
@@ -148,19 +148,6 @@ export default {
     }
   },
 
-  created: async function() {
-    /*let board;
-    try{
-      board = await this.$axios.get("/board/list");
-    }catch(err){
-      this.$router.app.$emit("showSnackbar", `게시판 리스트를 불러오지 못했습니다.[${err.response.data.message}]`, "error");
-      return;
-    }
-    this.boardItems = board.data.map(x => {
-      return {text: x.boardName, value: x.boardId};
-    });*/
-  },
-
   mounted: async function() {
     if (this.boardItems.length === 0) {
       let board;
@@ -250,13 +237,3 @@ export default {
   }
 };
 </script>
-
-<style lang="stylus">
-#sanctionTable {
-  width: 100%;
-
-  .v-datatable__actions {
-    justify-content: space-between;
-  }
-}
-</style>
