@@ -1,25 +1,21 @@
-import Vuex from 'vuex';
+export const state = () => ({
+  userId: null
+});
 
-const store = () =>
-  new Vuex.Store({
-    state: {
-      userId: null
-    },
-    getters: {
-      userId(state){
-        return state.userId;
-      }
-    },
-    mutations: {
-      SET_USER_ID(state, userId) {
-        state.userId = userId
-      }
-    },
-    actions: {
-      setUserId({ commit }, userId) {
-        commit('SET_USER_ID', userId);
-      }
-    }
-  })
+export const mutations = {
+  SET_USER_ID(state, userId) {
+    state.userId = userId
+  }
+};
 
-export default store
+export const getters = {
+  userId(state){
+    return state.userId;
+  }
+}
+
+export const actions = {
+  setUserId({ commit }, userId) {
+    commit('SET_USER_ID', userId);
+  }
+}
