@@ -1,9 +1,9 @@
 <template>
   <v-navigation-drawer id="appDrawer" :mini-variant.sync="mini" app v-model="drawer" width="260">
     <v-toolbar color="primary darken-1" dark>
-      <img src="~static/img/m.png" height="36" alt="Pedagy Administrator">
+      <img src="~static/img/logo.svg" height="36" alt="Pedagy Administrator">
       <v-toolbar-title class="ml-0 pl-3">
-        <span class="hidden-sm-and-down">Pedagy Admin</span>
+        <span class="hidden-sm-and-down">Admin</span>
       </v-toolbar-title>
     </v-toolbar>
     <v-list dense expand>
