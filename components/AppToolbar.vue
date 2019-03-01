@@ -1,7 +1,7 @@
 <template>
   <v-toolbar color="primary" :fixed="false" dark app>
     <v-toolbar-side-icon @click.stop="handleDrawerToggle"></v-toolbar-side-icon>
-    <v-toolbar-title class="ml-0 pl-3">pedagy admin</v-toolbar-title>
+    <v-toolbar-title class="ml-0 pl-3" v-if="$vuetify.breakpoint.smAndUp">pedagy admin</v-toolbar-title>
     <v-spacer></v-spacer>
     <span>{{nickName || ''}}님 로그인</span>
     <v-btn @click="signout">로그아웃</v-btn>

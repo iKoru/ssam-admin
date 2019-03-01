@@ -6,7 +6,7 @@
         <span class="hidden-sm-and-down">Admin</span>
       </v-toolbar-title>
     </v-toolbar>
-    <v-list dense expand>
+    <v-list dense expand class="mb-5">
       <template v-for="(item, i) in menus">
         <!--group with subitems-->
         <v-list-group v-if="item.items" :key="item.name" :group="item.group" :prepend-icon="item.icon" no-action="no-action">
@@ -108,7 +108,7 @@ export default {
 
 <style lang="stylus">
 #appDrawer {
-  overflow: hidden;
+  overflow: auto;
 
   .drawer-menu--scroll {
     height: calc(100vh - 48px);
