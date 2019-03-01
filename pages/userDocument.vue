@@ -30,7 +30,7 @@
             <v-data-table :headers="headers" :items="userDocuments" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserDocuments" :pagination.sync="pagination" :no-data-text="noresult">
               <template slot="items" slot-scope="props">
                 <tr>
-                  <td class="text-xs-left">{{ boardItems.find(x=>x.value === props.item.boardId).text }}</td>
+                  <td class="text-xs-left">{{ boardItems.some(x=>x.value === props.item.boardId) ? boardItems.find(x=>x.value === props.item.boardId).text : '(삭제된 게시판)'}}</td>
                   <td class="text-xs-left">{{ props.item.documentId }}</td>
                   <td class="text-xs-left ellipsis">
                     <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.title }}</a>
@@ -66,7 +66,7 @@
             <v-data-table :headers="commentHeaders" :items="userComments" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="commentsPagination" :no-data-text="noresult">
               <template slot="items" slot-scope="props">
                 <tr>
-                  <td class="text-xs-left">{{ boardItems.find(x=>x.value === props.item.boardId).text }}</td>
+                  <td class="text-xs-left">{{ boardItems.some(x=>x.value === props.item.boardId) ? boardItems.find(x=>x.value === props.item.boardId).text : '(삭제된 게시판)' }}</td>
                   <td class="text-xs-left">{{ props.item.commentId }}</td>
                   <td class="text-xs-left ellipsis">
                     <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.contents }}</a>
