@@ -10,107 +10,108 @@
           <v-tab href="#commentReport">댓글
             <v-icon>question_answer</v-icon>
           </v-tab>
-
-          <v-tab-item value="documentReport">
-            <v-toolbar flat color="white">
-              <v-toolbar-title>게시물 신고 조회</v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-form class="px-3 pt-2 white">
-              <v-layout wrap xs12 child-flex pa-2>
-                <v-flex xs12 sm4 md3>
-                  <v-select v-model="searchTarget" pa-2 :items="searchTargetItems" label="검색 대상"></v-select>
-                </v-flex>
-                <v-flex xs12 sm7>
-                  <v-select clearable v-if="searchTarget === 'status'" pa-2 v-model="searchStatus" :items="reportStatusItems"></v-select>
-                  <v-text-field v-else name="searchQuery" pa-2 v-model="searchQuery" @keyup.enter.stop="getDataFromApi"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm2>
-                  <v-btn color="primary" pa-2 @click="getDataFromApi">검색</v-btn>
-                </v-flex>
-              </v-layout>
-            </v-form>
-
-            <v-data-table :headers="headers" :items="documentReports" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalDocumentReports" :pagination.sync="pagination" :no-data-text="noresult">
-              <template slot="items" slot-scope="props">
-                <tr>
-                  <td class="text-xs-left">{{ props.item.documentId }}</td>
-                  <td class="text-xs-left ellipsis">
-                    <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.title }}</a>
-                  </td>
-                  <td class="text-xs-left">{{ props.item.userId }}</td>
-                  <td class="text-xs-left">{{ reportTypeItems.some(x=>x.value === props.item.reportTypeId)?reportTypeItems.find(x=>x.value === props.item.reportTypeId).text:'' }}</td>
-                  <td class="text-xs-left">
-                    <template v-if="props.item.status === 'NORMAL'">
-                      유효<v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn><v-btn small @click="changeStatus(props.item, 'DONE')">완료처리</v-btn>
-                    </template>
-                    <template v-else-if="props.item.status === 'INVALID'">
-                      무효<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'DONE')">완료처리</v-btn>
-                    </template>
-                    <template v-else>
-                      완료<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn>
-                    </template>
-                  </td>
-                  <td class="text-xs-right">{{ $moment(props.item.reportDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
-                  <td><v-btn small @click="sanction(props.item)">제재</v-btn></td>
-                </tr>
-              </template>
-              <template slot="no-data">
-                {{this.noresult}}
-                <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-
-          <v-tab-item value="commentReport">
-            <v-toolbar flat color="white">
-              <v-toolbar-title>댓글 신고 조회</v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-form class="px-3 pt-2 white">
-              <v-layout wrap xs12 child-flex pa-2>
-                <v-flex xs12 sm4 md3>
-                  <v-select v-model="searchTarget" pa-2 :items="searchTargetItems" label="검색 대상"></v-select>
-                </v-flex>
-                <v-flex xs12 sm7>
-                  <v-select clearable v-if="searchTarget === 'status'" pa-2 v-model="searchStatus" :items="reportStatusItems"></v-select>
-                  <v-text-field v-else name="searchQuery" pa-2 v-model="searchQuery" @keyup.enter.stop="getDataFromApi"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm2>
-                  <v-btn color="primary" pa-2 @click="getDataFromCommentsApi">검색</v-btn>
-                </v-flex>
-              </v-layout>
-            </v-form>
-
-            <v-data-table :headers="commentHeaders" :items="commentReports" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalCommentReports" :pagination.sync="commentsPagination" :no-data-text="noresult">
-              <template slot="items" slot-scope="props">
-                <tr>
-                  <td class="text-xs-left">{{ props.item.commentId }}</td>
-                  <td class="text-xs-left ellipsis">
-                    <a :href="`${mainServerHost}/${props.item.documentId}`" target="_blank">{{ props.item.contents }}</a>
-                  </td>
-                  <td class="text-xs-left">{{ props.item.userId }}</td>
-                  <td class="text-xs-left">{{ reportTypeItems.some(x=>x.value === props.item.reportTypeId)?reportTypeItems.find(x=>x.value === props.item.reportTypeId).text:'' }}</td>
-                  <td class="text-xs-left">
-                    <template v-if="props.item.status === 'NORMAL'">
-                      유효<v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn><v-btn small @click="changeStatus(props.item, 'DONE')">완료처리</v-btn>
-                    </template>
-                    <template v-else-if="props.item.status === 'INVALID'">
-                      무효<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'DONE')">완료처리</v-btn>
-                    </template>
-                    <template v-else>
-                      완료<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn>
-                    </template>
-                  <td class="text-xs-right">{{ $moment(props.item.reportDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
-                  <td><v-btn small @click="sanction(props.item)">제재</v-btn></td>
-                </tr>
-              </template>
-              <template slot="no-data">
-                {{this.noresult}}
-                <v-btn color="primary" @click="getDataFromCommentsApi">새로고침</v-btn>
-              </template>
-            </v-data-table>
-          </v-tab-item>
+          <v-tabs-items touchless>
+            <v-tab-item value="documentReport">
+              <v-toolbar flat color="white">
+                <v-toolbar-title>게시물 신고 조회</v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+              <v-form class="px-3 pt-2 white">
+                <v-layout wrap xs12 child-flex pa-2>
+                  <v-flex xs12 sm4 md3>
+                    <v-select v-model="searchTarget" pa-2 :items="searchTargetItems" label="검색 대상"></v-select>
+                  </v-flex>
+                  <v-flex xs12 sm7>
+                    <v-select clearable v-if="searchTarget === 'status'" pa-2 v-model="searchStatus" :items="reportStatusItems"></v-select>
+                    <v-text-field v-else name="searchQuery" pa-2 v-model="searchQuery" @keyup.enter.stop="getDataFromApi"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm2>
+                    <v-btn color="primary" pa-2 @click="getDataFromApi">검색</v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-form>
+  
+              <v-data-table :headers="headers" :items="documentReports" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalDocumentReports" :pagination.sync="pagination" :no-data-text="noresult">
+                <template slot="items" slot-scope="props">
+                  <tr>
+                    <td class="text-xs-left">{{ props.item.documentId }}</td>
+                    <td class="text-xs-left ellipsis">
+                      <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.title }}</a>
+                    </td>
+                    <td class="text-xs-left">{{ props.item.userId }}</td>
+                    <td class="text-xs-left">{{ reportTypeItems.some(x=>x.value === props.item.reportTypeId)?reportTypeItems.find(x=>x.value === props.item.reportTypeId).text:'' }}</td>
+                    <td class="text-xs-left">
+                      <template v-if="props.item.status === 'NORMAL'">
+                        유효<v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn><v-btn small @click="changeStatus(props.item, 'DONE')">완료처리</v-btn>
+                      </template>
+                      <template v-else-if="props.item.status === 'INVALID'">
+                        무효<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'DONE')">완료처리</v-btn>
+                      </template>
+                      <template v-else>
+                        완료<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn>
+                      </template>
+                    </td>
+                    <td class="text-xs-right">{{ $moment(props.item.reportDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
+                    <td><v-btn small @click="sanction(props.item)">제재</v-btn></td>
+                  </tr>
+                </template>
+                <template slot="no-data">
+                  {{this.noresult}}
+                  <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
+                </template>
+              </v-data-table>
+            </v-tab-item>
+  
+            <v-tab-item value="commentReport">
+              <v-toolbar flat color="white">
+                <v-toolbar-title>댓글 신고 조회</v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+              <v-form class="px-3 pt-2 white">
+                <v-layout wrap xs12 child-flex pa-2>
+                  <v-flex xs12 sm4 md3>
+                    <v-select v-model="searchTarget" pa-2 :items="searchTargetItems" label="검색 대상"></v-select>
+                  </v-flex>
+                  <v-flex xs12 sm7>
+                    <v-select clearable v-if="searchTarget === 'status'" pa-2 v-model="searchStatus" :items="reportStatusItems"></v-select>
+                    <v-text-field v-else name="searchQuery" pa-2 v-model="searchQuery" @keyup.enter.stop="getDataFromApi"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm2>
+                    <v-btn color="primary" pa-2 @click="getDataFromCommentsApi">검색</v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-form>
+  
+              <v-data-table :headers="commentHeaders" :items="commentReports" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalCommentReports" :pagination.sync="commentsPagination" :no-data-text="noresult">
+                <template slot="items" slot-scope="props">
+                  <tr>
+                    <td class="text-xs-left">{{ props.item.commentId }}</td>
+                    <td class="text-xs-left ellipsis">
+                      <a :href="`${mainServerHost}/${props.item.documentId}`" target="_blank">{{ props.item.contents }}</a>
+                    </td>
+                    <td class="text-xs-left">{{ props.item.userId }}</td>
+                    <td class="text-xs-left">{{ reportTypeItems.some(x=>x.value === props.item.reportTypeId)?reportTypeItems.find(x=>x.value === props.item.reportTypeId).text:'' }}</td>
+                    <td class="text-xs-left">
+                      <template v-if="props.item.status === 'NORMAL'">
+                        유효<v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn><v-btn small @click="changeStatus(props.item, 'DONE')">완료처리</v-btn>
+                      </template>
+                      <template v-else-if="props.item.status === 'INVALID'">
+                        무효<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'DONE')">완료처리</v-btn>
+                      </template>
+                      <template v-else>
+                        완료<v-btn small @click="changeStatus(props.item, 'NORMAL')">유효화</v-btn><v-btn small @click="changeStatus(props.item, 'INVALID')">무효화</v-btn>
+                      </template>
+                    <td class="text-xs-right">{{ $moment(props.item.reportDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
+                    <td><v-btn small @click="sanction(props.item)">제재</v-btn></td>
+                  </tr>
+                </template>
+                <template slot="no-data">
+                  {{this.noresult}}
+                  <v-btn color="primary" @click="getDataFromCommentsApi">새로고침</v-btn>
+                </template>
+              </v-data-table>
+            </v-tab-item>
+          </v-tabs-items>
         </v-tabs>
         <v-dialog v-model="dialog" max-width="500px" :fullscreen="$vuetify.breakpoint.smAndDown">
           <v-card>

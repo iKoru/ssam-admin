@@ -10,78 +10,80 @@
           <v-tab href="#userComment">댓글
             <v-icon>question_answer</v-icon>
           </v-tab>
-
-          <v-tab-item value="userDocument">
-            <v-toolbar flat color="white">
-              <v-toolbar-title>회원 게시물 조회</v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-form class="px-3 pt-2 white">
-              <v-layout wrap xs12 child-flex pa-2>
-                <v-flex xs12 sm10>
-                  <v-text-field name="searchQuery" pa-2 v-model="searchQuery" @keydown.enter.stop.prevent="getDataFromApi" label="조회 대상 사용자ID"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm2>
-                  <v-btn color="primary" pa-2 @click="getDataFromApi">검색</v-btn>
-                </v-flex>
-              </v-layout>
-            </v-form>
-
-            <v-data-table :headers="headers" :items="userDocuments" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserDocuments" :pagination.sync="pagination" :no-data-text="noresult">
-              <template slot="items" slot-scope="props">
-                <tr>
-                  <td class="text-xs-left">{{ boardItems.some(x=>x.value === props.item.boardId) ? boardItems.find(x=>x.value === props.item.boardId).text : '(삭제된 게시판)'}}</td>
-                  <td class="text-xs-left">{{ props.item.documentId }}</td>
-                  <td class="text-xs-left ellipsis">
-                    <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.title }}</a>
-                  </td>
-                  <td class="text-xs-left">{{ props.item.isDeleted?'삭제됨':'정상' }}</td>
-                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
-                  <td class="text-xs-right"><v-btn class="px-0 ma-0" small color="error" @click="deleteDocument(props.item)">삭제</v-btn></td>
-                </tr>
-              </template>
-              <template slot="no-data">
-                {{this.noresult}}
-                <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-
-          <v-tab-item value="userComment">
-            <v-toolbar flat color="white">
-              <v-toolbar-title>회원 댓글 조회</v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-            <v-form class="px-3 pt-2 white">
-              <v-layout wrap xs12 child-flex pa-2>
-                <v-flex xs12 sm10>
-                  <v-text-field name="searchQuery" pa-2 v-model="searchQuery" @keydown.enter.stop.prevent="getDataFromCommentsApi" label="조회 대상 사용자ID"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm2>
-                  <v-btn color="primary" pa-2 @click="getDataFromCommentsApi">검색</v-btn>
-                </v-flex>
-              </v-layout>
-            </v-form>
-
-            <v-data-table :headers="commentHeaders" :items="userComments" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="commentsPagination" :no-data-text="noresult">
-              <template slot="items" slot-scope="props">
-                <tr>
-                  <td class="text-xs-left">{{ boardItems.some(x=>x.value === props.item.boardId) ? boardItems.find(x=>x.value === props.item.boardId).text : '(삭제된 게시판)' }}</td>
-                  <td class="text-xs-left">{{ props.item.commentId }}</td>
-                  <td class="text-xs-left ellipsis">
-                    <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.contents }}</a>
-                  </td>
-                  <td class="text-xs-left">{{ props.item.isDeleted?'삭제됨':'정상' }}</td>
-                  <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
-                  <td class="text-xs-right"><v-btn class="px-0 ma-0" small color="error" @click="deleteComment(props.item)">삭제</v-btn></td>
-                </tr>
-              </template>
-              <template slot="no-data">
-                {{this.noresult}}
-                <v-btn color="primary" @click="getDataFromCommentsApi">새로고침</v-btn>
-              </template>
-            </v-data-table>
-          </v-tab-item>
+          
+          <v-tabs-items touchless>
+            <v-tab-item value="userDocument">
+              <v-toolbar flat color="white">
+                <v-toolbar-title>회원 게시물 조회</v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+              <v-form class="px-3 pt-2 white">
+                <v-layout wrap xs12 child-flex pa-2>
+                  <v-flex xs12 sm10>
+                    <v-text-field name="searchQuery" pa-2 v-model="searchQuery" @keydown.enter.stop.prevent="getDataFromApi" label="조회 대상 사용자ID"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm2>
+                    <v-btn color="primary" pa-2 @click="getDataFromApi">검색</v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-form>
+  
+              <v-data-table :headers="headers" :items="userDocuments" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserDocuments" :pagination.sync="pagination" :no-data-text="noresult">
+                <template slot="items" slot-scope="props">
+                  <tr>
+                    <td class="text-xs-left">{{ boardItems.some(x=>x.value === props.item.boardId) ? boardItems.find(x=>x.value === props.item.boardId).text : '(삭제된 게시판)'}}</td>
+                    <td class="text-xs-left">{{ props.item.documentId }}</td>
+                    <td class="text-xs-left ellipsis">
+                      <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.title }}</a>
+                    </td>
+                    <td class="text-xs-left">{{ props.item.isDeleted?'삭제됨':'정상' }}</td>
+                    <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
+                    <td class="text-xs-right"><v-btn class="px-0 ma-0" small color="error" @click="deleteDocument(props.item)">삭제</v-btn></td>
+                  </tr>
+                </template>
+                <template slot="no-data">
+                  {{this.noresult}}
+                  <v-btn color="primary" @click="getDataFromApi">새로고침</v-btn>
+                </template>
+              </v-data-table>
+            </v-tab-item>
+  
+            <v-tab-item value="userComment">
+              <v-toolbar flat color="white">
+                <v-toolbar-title>회원 댓글 조회</v-toolbar-title>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+              <v-form class="px-3 pt-2 white">
+                <v-layout wrap xs12 child-flex pa-2>
+                  <v-flex xs12 sm10>
+                    <v-text-field name="searchQuery" pa-2 v-model="searchQuery" @keydown.enter.stop.prevent="getDataFromCommentsApi" label="조회 대상 사용자ID"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm2>
+                    <v-btn color="primary" pa-2 @click="getDataFromCommentsApi">검색</v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-form>
+  
+              <v-data-table :headers="commentHeaders" :items="userComments" class="w-100" :rows-per-page-items="[15]" :loading="loading" :total-items="totalUserComments" :pagination.sync="commentsPagination" :no-data-text="noresult">
+                <template slot="items" slot-scope="props">
+                  <tr>
+                    <td class="text-xs-left">{{ boardItems.some(x=>x.value === props.item.boardId) ? boardItems.find(x=>x.value === props.item.boardId).text : '(삭제된 게시판)' }}</td>
+                    <td class="text-xs-left">{{ props.item.commentId }}</td>
+                    <td class="text-xs-left ellipsis">
+                      <a :href="`${mainServerHost}/${props.item.boardId}/${props.item.documentId}`" target="_blank">{{ props.item.contents }}</a>
+                    </td>
+                    <td class="text-xs-left">{{ props.item.isDeleted?'삭제됨':'정상' }}</td>
+                    <td class="text-xs-right">{{ $moment(props.item.writeDateTime, 'YYYYMMDDHHmmss').format('Y-MM-DD HH:mm:ss') }}</td>
+                    <td class="text-xs-right"><v-btn class="px-0 ma-0" small color="error" @click="deleteComment(props.item)">삭제</v-btn></td>
+                  </tr>
+                </template>
+                <template slot="no-data">
+                  {{this.noresult}}
+                  <v-btn color="primary" @click="getDataFromCommentsApi">새로고침</v-btn>
+                </template>
+              </v-data-table>
+            </v-tab-item>
+          </v-tabs-items>
         </v-tabs>
       </v-layout>
     </v-container>
